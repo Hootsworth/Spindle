@@ -1068,7 +1068,8 @@ let S={
   liked:[],noped:[],seen:[],genre:{},artist:{},decade:{},posts:[],
   roasts:{},streak:1,lastDaily:'',
   userProfile:{bio:'',handle:''},
-  settings:{scratch:true,tapeStop:true,autoplay:true,theme:'default'}
+  settings:{scratch:true,tapeStop:true,autoplay:true,theme:'default'},
+  localDispatches:[]
 };
 try{Object.assign(S,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 
@@ -1428,14 +1429,26 @@ document.addEventListener('click',async e=>{
  if(fl){
    if(!currentUser){openAuthModal('Sign in to endorse reviews.');return}
    const postId=fl.dataset.postLike;
-   const post=firestorePosts.find(x=>x.id===postId);
+   const post=firestorePosts.find(x=>x.id===postId) || (S.localDispatches||[]).find(x=>x.id===postId);
    const isLiked=post?.likedBy?.includes(currentUser.uid);
+   if(post?.isLocal){
+     if(!post.likedBy) post.likedBy=[];
+     if(isLiked){
+       post.likedBy=post.likedBy.filter(u=>u!==currentUser.uid);
+       post.likesCount=Math.max(0,(post.likesCount||1)-1);
+     } else {
+       post.likedBy.push(currentUser.uid);
+       post.likesCount=(post.likesCount||0)+1;
+     }
+     saveState();renderFeed();
+     return;
+   }
    try{
      await updateDoc(doc(db,'posts',postId),{
        likesCount: increment(isLiked?-1:1),
        likedBy: isLiked?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)
      });
-   }catch(err){}
+   }catch(err){console.error('Like error:',err);}
  }
 
  const tc=e.target.closest('[data-toggle-comments]');
@@ -1490,39 +1503,64 @@ document.addEventListener('click',e=>{
 $('#btnPublishPost').onclick=async()=>{
   if(!currentUser){openAuthModal('Sign in to publish dispatches.');return}
   const caption=$('#composerText').value.trim();
-  if(!caption && !composerTrack) return toast('Enter review text or attach a record.');
+  const trackToPost=composerTrack||(S.liked.length?S.liked[0]:null)||(deck.length?deck[0]:null);
 
-  const trackToPost=composerTrack||(S.liked.length?S.liked[0]:null);
-  if(!trackToPost) return toast('Preserve a record in Catalog first.');
+  if(!caption && !composerTrack) return toast('ENTER REVIEW TEXT OR ATTACH A RECORD');
+  if(!trackToPost) return toast('PLAY OR PRESERVE A RECORD FIRST');
+
+  const postPayload={
+    uid:currentUser.uid,
+    authorName:(currentUser.displayName||'Subscriber').slice(0,100),
+    authorColor:S.userProfile?.avatarColor||'#141312',
+    authorHandle:(S.userProfile?.handle||'subscriber').slice(0,30),
+    caption:caption.slice(0,500),
+    track:{
+      id:String(trackToPost.id||Date.now()),
+      name:(trackToPost.name||'Untitled').slice(0,300),
+      artist:(trackToPost.artist||'Unknown Artist').slice(0,300),
+      genre:(trackToPost.genre||'Sound').slice(0,100),
+      year:String(trackToPost.year||'').slice(0,20),
+      art:trackToPost.art||'',
+      prev:trackToPost.prev||''
+    },
+    likesCount:0,
+    likedBy:[],
+    commentsCount:0,
+    comments:[],
+    createdAt:serverTimestamp()
+  };
+  if(currentUser.email){
+    postPayload.authorEmail=currentUser.email;
+  }
 
   try{
-    await addDoc(collection(db,'posts'),{
-      uid:currentUser.uid,
-      authorName:(currentUser.displayName||'Subscriber').slice(0,100),
-      authorHandle:(S.userProfile?.handle||'subscriber').slice(0,30),
-      authorEmail:currentUser.email||'',
-      caption:caption.slice(0,500),
-      track:{
-        id:trackToPost.id,
-        name:trackToPost.name.slice(0,300),
-        artist:trackToPost.artist.slice(0,300),
-        genre:(trackToPost.genre||'Sound').slice(0,100),
-        year:String(trackToPost.year||'').slice(0,20),
-        art:trackToPost.art||'',
-        prev:trackToPost.prev||''
-      },
-      likesCount:0,
-      likedBy:[],
-      commentsCount:0,
-      comments:[],
-      createdAt:serverTimestamp()
-    });
+    await addDoc(collection(db,'posts'),postPayload);
     $('#composerText').value='';
     composerTrack=null;
     $('#composerAttachedTrack').style.display='none';
     toast('DISPATCH LOGGED TO JOURNAL');
   }catch(err){
-    toast('ERROR LOGGING ENTRY');
+    console.error('Firestore post error:', err);
+    const localPost={
+      ...postPayload,
+      id:'local_'+Date.now(),
+      createdAt:{seconds:Math.floor(Date.now()/1000)},
+      isLocal:true
+    };
+    if(!S.localDispatches) S.localDispatches=[];
+    S.localDispatches.unshift(localPost);
+    saveState();
+    renderFeed();
+    $('#composerText').value='';
+    composerTrack=null;
+    $('#composerAttachedTrack').style.display='none';
+
+    if(err.code==='permission-denied'){
+      toast('SAVED LOCALLY (PERMISSION DENIED)');
+      alert('Firestore Permission Notice:\n\nFirebase rejected writing to "posts" because the security rules in your Firebase Console need to be updated.\n\nYour dispatch has been preserved safely in your local journal.\n\nTo enable global community sharing for all visitors:\n1. Open https://console.firebase.google.com -> spindle-3b452\n2. Click "Firestore Database" -> "Rules" tab\n3. Paste the contents of firestore.rules and click "Publish".');
+    } else {
+      toast('SAVED LOCALLY: '+(err.code||err.message||'OFFLINE'));
+    }
   }
 };
 
@@ -1531,7 +1569,16 @@ $('#feedTabMine').onclick=()=>{feedFilter='mine';$('#feedTabMine').classList.add
 
 function renderFeed(){
   const el=$('#feed');
-  let posts=firestorePosts;
+  const allPostsMap=new Map();
+  (S.localDispatches||[]).forEach(p=>allPostsMap.set(p.id,p));
+  firestorePosts.forEach(p=>allPostsMap.set(p.id,p));
+  let posts=Array.from(allPostsMap.values());
+  posts.sort((a,b)=>{
+    const ta=(a.createdAt?.seconds||(a.createdAt?.nanoseconds?a.createdAt.seconds:0)||0);
+    const tb=(b.createdAt?.seconds||(b.createdAt?.nanoseconds?b.createdAt.seconds:0)||0);
+    return tb-ta;
+  });
+
   if(feedFilter==='mine'){
     posts=posts.filter(p=>currentUser && p.uid===currentUser.uid);
   }
@@ -1550,7 +1597,7 @@ function renderFeed(){
       <article class="post">
         <div class="post-byline">
           <span>REVIEW BY ${esc(p.authorName||'SUBSCRIBER').toUpperCase()}</span>
-          <span>@${esc(p.authorHandle||'ARCHIVIST').toUpperCase()}</span>
+          <span>@${esc(p.authorHandle||'ARCHIVIST').toUpperCase()}${p.isLocal?' [LOCAL]':''}</span>
         </div>
         ${p.caption?`<p>${esc(p.caption)}</p>`:''}
         ${t?rowH(t,`<button class="ib${S.liked.some(x=>x.id===t.id)?' on':''}" data-love="${t.id}" aria-label="Preserve">${heartIcon}</button>`):''}
@@ -1585,19 +1632,30 @@ window.submitComment=async(postId,form)=>{
   const text=input.value.trim();
   if(!text) return;
   input.value='';
+  const newComment={
+    authorUid:currentUser.uid,
+    authorName:currentUser.displayName||'Subscriber',
+    text:text.slice(0,300),
+    createdAt:new Date().toISOString()
+  };
+  const localPost=(S.localDispatches||[]).find(p=>p.id===postId);
+  if(localPost){
+    if(!localPost.comments) localPost.comments=[];
+    localPost.comments.push(newComment);
+    localPost.commentsCount=(localPost.commentsCount||0)+1;
+    saveState();renderFeed();toast('NOTE RECORDED');
+    return;
+  }
   try{
-    const newComment={
-      authorUid:currentUser.uid,
-      authorName:currentUser.displayName||'Subscriber',
-      text:text.slice(0,300),
-      createdAt:new Date().toISOString()
-    };
     await updateDoc(doc(db,'posts',postId),{
       comments:arrayUnion(newComment),
       commentsCount:increment(1)
     });
     toast('NOTE RECORDED');
-  }catch(err){}
+  }catch(err){
+    console.error('Comment error:', err);
+    toast('FAILED TO RECORD NOTE');
+  }
 };
 
 // Firestore Realtime Listener
@@ -1608,8 +1666,12 @@ try{
     snapshot.forEach(docSnap=>posts.push({id:docSnap.id,...docSnap.data()}));
     firestorePosts=posts;
     if($('#v-feed').classList.contains('on')) renderFeed();
-  },err=>{});
-}catch(err){}
+  },err=>{
+    console.warn('Firestore posts query error:', err);
+  });
+}catch(err){
+  console.warn('Posts listener init error:', err);
+}
 
 /* ==============================================================
    6. TRANSMISSIONS (DMs & CIRCLES)
@@ -1835,23 +1897,32 @@ function renderAccountPage(){
   const genres=topK(S.genre,6);
   $('#profGenres').innerHTML=genres.length?genres.map(g=>`<span class="btn-tag" style="margin:0 4px 4px 0">${esc(g)}</span>`).join(''):'<p style="font:400 11px var(--mono);color:var(--ink-secondary)">Evaluate catalog records to construct genre affinities.</p>';
 
-  const myPosts=firestorePosts.filter(p=>p.uid===currentUser.uid);
-  $('#profMyPosts').innerHTML=myPosts.length?myPosts.map(p=>`
+  const allUserPosts=[...firestorePosts, ...(S.localDispatches||[])].filter(p=>p.uid===currentUser.uid);
+  $('#profMyPosts').innerHTML=allUserPosts.length?allUserPosts.map(p=>`
     <div class="row">
       ${p.track?`<img src="${esc(p.track.art)}">`:''}
-      <div class="t"><b>${esc(p.track?.name||'Dispatch')}</b><span>${esc(p.caption||p.track?.artist||'')}</span></div>
+      <div class="t"><b>${esc(p.track?.name||'Dispatch')}</b><span>${esc(p.caption||p.track?.artist||'')}${p.isLocal?' [LOCAL]':''}</span></div>
       <button class="btn-outline" style="padding:4px 8px;font-size:9px" onclick="deleteMyPost('${p.id}')">PURGE</button>
     </div>
   `).join(''):'<p style="font:400 11px var(--mono);color:var(--ink-secondary)">No review entries logged under this subscriber ID.</p>';
 }
 
 window.deleteMyPost=async(postId)=>{
-  if(!confirm('Purge this record review from public journal?')) return;
+  if(!confirm('Purge this record review from journal?')) return;
+  if(S.localDispatches && S.localDispatches.some(p=>p.id===postId)){
+    S.localDispatches=S.localDispatches.filter(p=>p.id!==postId);
+    saveState();renderFeed();
+    if($('#v-profile').classList.contains('on')) renderProfile();
+    toast('ENTRY PURGED');
+    return;
+  }
   try{
     const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     await deleteDoc(doc(db,'posts',postId));
     toast('ENTRY PURGED');
-  }catch(e){}
+  }catch(e){
+    console.error('Delete post error:',e);
+  }
 };
 
 $('#btnEditProfile').onclick=()=>{

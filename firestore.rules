@@ -31,8 +31,9 @@ rules_version = '2';
 // Fields:
 //   - uid: string (required, immutable) - Author's Firebase Auth UID
 //   - authorName: string (required, 1-100 chars) - Display name of post author
-//   - authorColor: string (required, 2-30 chars) - Avatar color of post author
-//   - authorEmail: string (optional, valid email, max 254 chars) - Email of author
+//   - authorColor: string (optional, 2-30 chars) - Avatar color of post author
+//   - authorHandle: string (optional, max 30 chars) - Handle of post author
+//   - authorEmail: string (optional, valid email or empty string, max 254 chars) - Email of author
 //   - track: map (required, max 20 keys) - Song info (id, name, artist, genre, year, art, prev)
 //   - caption: string (required, 0-500 chars) - Post caption
 //   - likesCount: int (required, >= 0) - Aggregate like counter
@@ -121,7 +122,7 @@ service cloud.firestore {
       return track is map &&
         track.keys().hasAll(['id', 'name', 'artist']) &&
         track.keys().hasOnly(['id', 'name', 'artist', 'genre', 'year', 'art', 'prev']) &&
-        ((track.id is string && track.id.size() > 0 && track.id.size() <= 100) || (track.id is int)) &&
+        ((track.id is string && track.id.size() <= 100) || (track.id is int)) &&
         track.name is string && track.name.size() > 0 && track.name.size() <= 300 &&
         track.artist is string && track.artist.size() > 0 && track.artist.size() <= 300 &&
         (!('genre' in track) || (track.genre is string && track.genre.size() <= 100)) &&
@@ -157,16 +158,17 @@ service cloud.firestore {
 
     // Validate post document schema and bounds (used for both create and update)
     function isValidPost(data) {
-      return data.keys().hasAll(['uid', 'authorName', 'authorColor', 'track', 'caption', 'likesCount', 'likedBy', 'createdAt']) &&
+      return data.keys().hasAll(['uid', 'authorName', 'track', 'caption', 'likesCount', 'likedBy', 'createdAt']) &&
         data.keys().hasOnly([
-          'uid', 'authorName', 'authorColor', 'authorEmail',
+          'uid', 'authorName', 'authorColor', 'authorHandle', 'authorEmail',
           'track', 'caption', 'likesCount', 'likedBy',
           'commentsCount', 'comments', 'createdAt'
         ]) &&
         data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 &&
         data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 100 &&
-        data.authorColor is string && data.authorColor.size() >= 2 && data.authorColor.size() <= 30 &&
-        (!('authorEmail' in data) || isValidEmail(data.authorEmail)) &&
+        (!('authorColor' in data) || (data.authorColor is string && data.authorColor.size() >= 2 && data.authorColor.size() <= 30)) &&
+        (!('authorHandle' in data) || (data.authorHandle is string && data.authorHandle.size() <= 30)) &&
+        (!('authorEmail' in data) || data.authorEmail == '' || isValidEmail(data.authorEmail)) &&
         isValidTrack(data.track) &&
         data.caption is string && data.caption.size() <= 500 &&
         data.likesCount is int && data.likesCount >= 0 &&
