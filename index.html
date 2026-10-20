@@ -2,190 +2,167 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SPINDLE — Sound Archive & Vinyl Discovery</title>
+<title>SPINDLE — A Journal of Sound & Record Archive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#09080d;
-  --panel:#131118;
-  --surface:#1a1722;
-  --surface-hover:#221f2d;
-  --border:rgba(244,239,230,0.08);
-  --border-strong:rgba(244,239,230,0.18);
-  --paper:#f5efe6;
-  --paper-mute:#9992a4;
-  --vermilion:#e84534;
-  --gold:#d9a84e;
-  --patina:#4ecdc4;
-  --slate:#676173;
-  --serif:'Instrument Serif',Georgia,serif;
-  --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+  --paper:#fbf9f4;
+  --paper-card:#ffffff;
+  --paper-subtle:#f2eee6;
+  --ink:#141312;
+  --ink-secondary:#5e5a54;
+  --ink-muted:#8a847b;
+  --border:#ded8cb;
+  --border-strong:#141312;
+  --serif:'Newsreader',Georgia,serif;
   --mono:'Space Mono',monospace;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
 }
 
-body.theme-midnight{
-  --void:#000000;--panel:#08080a;--surface:#111116;--surface-hover:#181820;
-}
-body.theme-cyber{
-  --void:#050a14;--panel:#0a1224;--surface:#101c36;--vermilion:#ff0055;--gold:#00f2fe;--patina:#00ffaa;
+body.theme-inverted{
+  --paper:#111010;
+  --paper-card:#191817;
+  --paper-subtle:#22201e;
+  --ink:#f5f2eb;
+  --ink-secondary:#aba498;
+  --ink-muted:#78736b;
+  --border:#2b2926;
+  --border-strong:#f5f2eb;
 }
 
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
-  background:var(--void);
-  color:var(--paper);
-  font:400 14px/1.5 var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  font:400 14px/1.55 var(--sans);
   overflow:hidden;
   letter-spacing:-0.01em;
+  transition:background .25s,color .25s;
 }
 
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
-  outline:1px solid var(--gold);outline-offset:2px;
+  outline:2px solid var(--ink);outline-offset:2px;
 }
 
-/* Background Atmosphere */
-#bg{
-  position:fixed;inset:-15%;
-  background:center/cover;
-  filter:blur(85px) saturate(1.2) brightness(0.7);
-  opacity:.35;
-  transition:background-image .8s cubic-bezier(.2,.8,.2,1),opacity .8s,transform .2s ease-out;
-  z-index:0;
-  transform-origin:center center;
-  pointer-events:none;
-}
+/* Halftone Texture Overlay */
 #grain{
-  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;mix-blend-mode:color-dodge;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 #app{position:relative;z-index:2;height:100dvh;display:flex;flex-direction:column}
 
-/* Top Header */
-header{
-  display:flex;align-items:center;justify-content:space-between;
+/* ==============================================================
+   BROADSHEET / NEWSLETTER MASTHEAD
+   ============================================================== */
+.masthead{
   padding:calc(env(safe-area-inset-top) + 12px) 20px 8px;
-  border-bottom:1px solid var(--border);
-  gap:12px;
+  border-bottom:2px solid var(--border-strong);
+  background:var(--paper);
 }
-.brand{display:flex;align-items:center;gap:12px;flex:none}
-.logo-disc{
-  width:26px;height:26px;border-radius:50%;
-  background:repeating-radial-gradient(circle,#050408 0 2px,#241e30 3px 4px);
-  border:1px solid rgba(255,255,255,0.15);
-  box-shadow:0 0 12px rgba(0,0,0,0.8);
-  display:grid;place-items:center;
-  animation:spin 5s linear infinite;
+.masthead-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font:400 10px var(--mono);color:var(--ink-secondary);
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding-bottom:6px;border-bottom:1px solid var(--border);
 }
-.logo-disc::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--vermilion)}
-.logo-disc.paused{animation-play-state:paused}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.brand-text{
-  font:700 20px var(--serif);
-  letter-spacing:0.04em;
+.masthead-main{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding-top:8px;gap:12px;
+}
+.gazette-title{
+  font:700 34px/1 var(--serif);
+  letter-spacing:-0.03em;
   text-transform:uppercase;
-  display:flex;align-items:baseline;gap:6px;
 }
-.brand-text span{font:400 10px var(--mono);color:var(--gold);letter-spacing:0.12em;text-transform:uppercase}
+.gazette-sub{
+  font:italic 12px var(--serif);
+  color:var(--ink-secondary);
+}
 
-.header-tools{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
-.header-tools::-webkit-scrollbar{display:none}
+.masthead-actions{display:flex;align-items:center;gap:8px}
 
-.tag-btn{
-  font:600 11px var(--mono);
-  letter-spacing:0.04em;
-  padding:5px 12px;
-  border-radius:4px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  color:var(--paper-mute);
+.btn-tag{
+  font:700 10px var(--mono);
+  letter-spacing:0.08em;
+  padding:5px 10px;
+  border-radius:2px;
+  background:var(--paper-card);
+  border:1px solid var(--border-strong);
+  color:var(--ink);
   display:inline-flex;align-items:center;gap:6px;
   white-space:nowrap;
-  transition:all .18s;
+  transition:all .15s;
 }
-.tag-btn:hover{background:var(--surface);border-color:var(--border-strong);color:var(--paper)}
-.tag-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(217,168,78,0.06)}
-.tag-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.btn-tag:hover{background:var(--ink);color:var(--paper)}
+.btn-tag.active{background:var(--ink);color:var(--paper)}
 
-.user-badge-btn{
-  display:flex;align-items:center;gap:8px;
-  padding:4px 10px 4px 5px;
-  border-radius:4px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  font:500 12px var(--sans);
+.user-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font:700 10px var(--mono);letter-spacing:0.08em;
+  padding:5px 10px;border-radius:2px;
+  border:1px solid var(--border-strong);
+  background:var(--paper-card);
   cursor:pointer;
-  transition:all .18s;
 }
-.user-badge-btn:hover{border-color:var(--border-strong)}
-.user-avatar-mark{
-  width:20px;height:20px;border-radius:2px;
-  background:var(--vermilion);color:#fff;
-  display:grid;place-items:center;font:700 10px var(--mono);
-}
+.user-tag:hover{background:var(--paper-subtle)}
 
-/* Time Machine Era Filter Bar */
-.era-strip{
-  display:flex;gap:6px;padding:6px 20px;
+/* Era Ledger Strip */
+.era-ledger{
+  display:flex;gap:4px;padding:6px 20px;
   overflow-x:auto;scrollbar-width:none;
-  background:rgba(19,17,24,0.4);
+  background:var(--paper-subtle);
   border-bottom:1px solid var(--border);
 }
-.era-strip::-webkit-scrollbar{display:none}
-.era-tag{
+.era-ledger::-webkit-scrollbar{display:none}
+.era-link{
   font:400 11px var(--mono);
-  padding:4px 10px;
-  color:var(--slate);
-  border-radius:3px;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-  transition:all .18s;
+  padding:4px 8px;
+  color:var(--ink-secondary);
+  letter-spacing:0.04em;
   white-space:nowrap;
 }
-.era-tag:hover{color:var(--paper)}
-.era-tag.on{color:var(--gold);background:rgba(217,168,78,0.1);font-weight:700}
+.era-link:hover{color:var(--ink);text-decoration:underline}
+.era-link.on{font-weight:700;color:var(--ink);text-decoration:underline}
 
 /* Main Views */
 main{flex:1;min-height:0;position:relative}
 .view{position:absolute;inset:0;display:none;overflow-y:auto;padding:16px 20px 110px}
 .view.on{display:block}
-#v-discover.on{display:flex;flex-direction:column;align-items:center;overflow:hidden;padding-bottom:94px}
+#v-discover.on{display:flex;flex-direction:column;align-items:center;overflow:hidden;padding-bottom:96px}
 
-/* Navigation Rail (Architectural & Minimal) */
+/* Architectural Footer Navigation */
 nav{
   position:fixed;bottom:0;left:0;right:0;
   display:flex;justify-content:space-around;
   padding:10px 8px calc(env(safe-area-inset-bottom) + 8px);
-  background:rgba(9,8,13,0.92);
-  backdrop-filter:blur(24px) saturate(1.4);
-  border-top:1px solid var(--border);
+  background:var(--paper);
+  border-top:2px solid var(--border-strong);
   z-index:20;
 }
 nav button{
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:4px 10px;border-radius:4px;
-  font:500 10px var(--mono);
-  letter-spacing:0.08em;
+  padding:4px 12px;
+  font:700 10px var(--mono);
+  letter-spacing:0.1em;
   text-transform:uppercase;
-  color:var(--slate);
-  transition:color .18s;
+  color:var(--ink-muted);
+  transition:color .15s;
   position:relative;
 }
-nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--paper)}
+nav button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav button.on{color:var(--ink);font-weight:700}
 nav button.on::after{
-  content:"";position:absolute;bottom:-4px;width:14px;height:2px;
-  background:var(--vermilion);border-radius:1px;
+  content:"";position:absolute;bottom:-5px;width:16px;height:2px;background:var(--ink);
 }
-.nav-pip{position:absolute;top:2px;right:12px;width:5px;height:5px;border-radius:50%;background:var(--vermilion)}
+.nav-dot{position:absolute;top:2px;right:14px;width:4px;height:4px;border-radius:50%;background:var(--ink)}
 
 /* ==============================================================
-   DISCOVER DECK & VINYL RECORD JACKET (ANALOG ARCHIVE STYLING)
+   DISCOVER DECK — NEWSPRINT SLEEVE & MATTE VINYL RECORD
    ============================================================== */
 #deckWrap{
   position:relative;flex:1;min-height:0;width:100%;
@@ -193,359 +170,352 @@ nav button.on::after{
 }
 #deck{
   position:relative;
-  width:min(86vw,380px);
-  height:min(100%,510px);
-  max-height:calc(100dvh - 305px);
-  min-height:300px;
-  margin-right:38px;
+  width:min(86vw,370px);
+  height:min(100%,500px);
+  max-height:calc(100dvh - 315px);
+  min-height:290px;
+  margin-right:36px;
 }
 
-/* Vinyl Record Disc */
+/* Monochrome Matte Vinyl Disc */
 .disc{
   position:absolute;top:6%;right:-42px;width:86%;aspect-ratio:1;border-radius:50%;z-index:0;
-  background:repeating-radial-gradient(circle at 50% 50%,#050407 0 2px,#16131c 3px 5px,#0a080f 6px 7px);
-  box-shadow:0 12px 40px rgba(0,0,0,0.85);
+  background:repeating-radial-gradient(circle at 50% 50%,#0f0e0d 0 2px,#262422 3px 5px,#141312 6px 7px);
+  border:1px solid #000;
+  box-shadow:0 14px 40px rgba(0,0,0,0.35);
   cursor:grab;touch-action:none;
-  transition:box-shadow .2s;
-}
-.disc::before{
-  content:"";position:absolute;inset:0;border-radius:50%;
-  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 40%,rgba(255,255,255,0.06) 60%,transparent 100%);
-  pointer-events:none;
 }
 .disc::after{
-  content:"SP-33";position:absolute;inset:33%;border-radius:50%;
-  background:radial-gradient(circle,#09080d 0 16%,var(--gold) 17% 92%,#b58434 93%);
-  border:2px solid #000;
-  box-shadow:inset 0 0 8px rgba(0,0,0,0.7);
+  content:"33 RPM";position:absolute;inset:33%;border-radius:50%;
+  background:var(--paper);border:2px solid #000;
   display:grid;place-items:center;
-  font:700 8px var(--mono);color:#09080d;letter-spacing:0.1em;
+  font:700 8px var(--mono);color:#000;letter-spacing:0.12em;
 }
 .disc.play{animation:spin 2.6s linear infinite}
-.disc.scratching{animation-play-state:paused;box-shadow:0 0 24px var(--gold)}
+.disc.scratching{animation-play-state:paused;outline:2px solid var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* Album Jacket Card */
+/* Newsprint Record Jacket */
 .card{
   position:absolute;inset:0;
-  border-radius:8px;
-  overflow:hidden;
-  background:var(--panel);
-  border:1px solid var(--border-strong);
+  background:var(--paper-card);
+  border:1.5px solid var(--border-strong);
   touch-action:none;user-select:none;cursor:grab;
-  box-shadow:0 24px 60px rgba(0,0,0,0.8);
+  box-shadow:0 20px 50px rgba(0,0,0,0.12);
   transition:transform .35s cubic-bezier(.2,.8,.2,1);
-  z-index:1;
+  z-index:1;display:flex;flex-direction:column;
 }
-.card.tape-stop{filter:contrast(1.3) grayscale(0.2)}
-.card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
-.card .shade{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(9,8,13,0.1) 0%,rgba(9,8,13,0.4) 45%,rgba(9,8,13,0.95) 94%);
+.card.tape-stop{filter:contrast(1.4) grayscale(1)}
+.card .art-container{
+  flex:1;position:relative;overflow:hidden;background:#000;
+  border-bottom:1.5px solid var(--border-strong);
 }
-
-.card-catalog-meta{
-  position:absolute;top:14px;left:16px;right:16px;
-  display:flex;justify-content:space-between;align-items:center;
-  font:700 10px var(--mono);color:rgba(244,239,230,0.75);
-  letter-spacing:0.12em;text-transform:uppercase;
-  text-shadow:0 2px 4px rgba(0,0,0,0.8);
-  pointer-events:none;
-}
-.catalog-badge{
-  background:rgba(9,8,13,0.65);backdrop-filter:blur(8px);
-  padding:3px 8px;border-radius:2px;border:1px solid rgba(255,255,255,0.1);
+.card img{
+  width:100%;height:100%;object-fit:cover;pointer-events:none;
+  filter:grayscale(0.3) contrast(1.1);
 }
 
-.card .meta{position:absolute;left:18px;right:18px;bottom:16px}
-.card .genre-chip{
-  font:700 10px var(--mono);
-  letter-spacing:0.1em;
-  color:var(--gold);
+.card-label-strip{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;
+  padding:8px 12px;
+  background:rgba(251,249,244,0.92);
+  border-bottom:1px solid var(--border-strong);
+  font:700 9px var(--mono);letter-spacing:0.12em;color:var(--ink);
   text-transform:uppercase;
-  margin-bottom:4px;display:block;
+}
+
+.card .meta{padding:14px 16px 12px;background:var(--paper-card)}
+.card .genre-stamp{
+  font:700 9px var(--mono);letter-spacing:0.1em;
+  color:var(--ink-secondary);text-transform:uppercase;margin-bottom:2px;display:block;
 }
 .card h2{
-  font:400 30px/1.05 var(--serif);
-  letter-spacing:-0.01em;
-  color:var(--paper);
-  text-wrap:balance;
-  margin-bottom:4px;
+  font:500 28px/1.05 var(--serif);
+  letter-spacing:-0.02em;
+  color:var(--ink);
+  margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.card .artist-name{
-  font:500 13px var(--sans);
-  color:var(--paper-mute);
-  text-transform:uppercase;
-  letter-spacing:0.06em;
-  margin-bottom:12px;
+.card .artist-credit{
+  font:400 12px var(--mono);color:var(--ink-secondary);
+  text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
-.card .needle-bar{height:2px;border-radius:1px;background:rgba(255,255,255,0.15);overflow:hidden}
-.card .needle-bar i{display:block;height:100%;width:0;background:var(--vermilion);transition:width .1s linear}
+.card .progress-rule{height:2px;background:var(--border);overflow:hidden}
+.card .progress-rule i{display:block;height:100%;width:0;background:var(--ink);transition:width .1s linear}
 
 .stamp{
-  position:absolute;top:30px;
-  font:700 24px var(--mono);
-  letter-spacing:0.12em;
-  padding:4px 16px;
-  border:2px solid;border-radius:4px;
-  opacity:0;pointer-events:none;
+  position:absolute;top:50px;
+  font:700 24px var(--mono);letter-spacing:0.16em;
+  padding:6px 18px;border:3px solid var(--ink);
+  opacity:0;pointer-events:none;background:var(--paper);
 }
-.stamp.like{left:20px;color:var(--patina);border-color:var(--patina);transform:rotate(-8deg)}
-.stamp.nope{right:20px;color:var(--vermilion);border-color:var(--vermilion);transform:rotate(8deg)}
+.stamp.like{left:20px;color:var(--ink);transform:rotate(-8deg)}
+.stamp.nope{right:20px;color:var(--ink);transform:rotate(8deg)}
 
 .pp{
-  position:absolute;top:14px;left:50%;translate:-50% 0;
-  width:42px;height:42px;border-radius:50%;
-  background:rgba(9,8,13,0.75);backdrop-filter:blur(10px);
-  border:1px solid var(--border-strong);
-  display:grid;place-items:center;
-  color:var(--paper);transition:transform .15s;
+  position:absolute;bottom:14px;right:14px;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);
 }
 .pp svg{width:16px;height:16px;fill:currentColor}
 
-/* Deck Action Buttons (Precision Tactile Controls) */
-.acts{display:flex;gap:18px;align-items:center;padding:12px 0 2px}
+/* Analog Controls (Stark Black & White) */
+.acts{display:flex;gap:18px;align-items:center;padding:12px 0 4px}
 .rb{
-  width:56px;height:56px;border-radius:50%;
+  width:52px;height:52px;border-radius:50%;
   display:grid;place-items:center;
-  background:var(--panel);
-  border:1px solid var(--border-strong);
-  color:var(--paper-mute);
-  transition:all .18s cubic-bezier(.2,.8,.2,1);
+  background:var(--paper-card);
+  border:1.5px solid var(--border-strong);
+  color:var(--ink);
+  box-shadow:2px 2px 0 var(--border-strong);
+  transition:all .15s;
 }
-.rb:hover{border-color:var(--paper);color:var(--paper);transform:translateY(-2px)}
-.rb:active{transform:scale(.92)}
-.rb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
-.rb.l:hover{border-color:var(--vermilion);color:var(--vermilion)}
-.rb.n:hover{border-color:var(--slate);color:var(--paper)}
-.rb.s{width:46px;height:46px;color:var(--gold);border-color:rgba(217,168,78,0.3)}
-.rb.drop{width:46px;height:46px;color:var(--paper);font:700 9px var(--mono);letter-spacing:0.1em}
-.rb.drop svg{width:15px;height:15px;margin-bottom:2px}
+.rb:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--border-strong)}
+.rb:active{transform:translate(1px,1px);box-shadow:0 0 0 var(--border-strong)}
+.rb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.rb.s{width:44px;height:44px;background:var(--ink);color:var(--paper)}
+.rb.drop{width:44px;height:44px;font:700 9px var(--mono);letter-spacing:0.08em}
+.rb.drop svg{width:14px;height:14px;margin-bottom:1px}
 
-.hint{font:400 11px var(--mono);color:var(--slate);letter-spacing:0.04em;text-align:center}
+.hint-bar{font:400 10px var(--mono);color:var(--ink-muted);letter-spacing:0.08em;text-align:center;text-transform:uppercase}
 
-/* Quick Roast Tag Bar */
+/* Roast Bar Popup */
 #roastBar{
   position:absolute;bottom:78px;display:none;
-  background:var(--panel);border:1px solid var(--border-strong);
-  border-radius:4px;padding:6px 10px;gap:6px;z-index:25;
-  box-shadow:0 12px 40px rgba(0,0,0,0.85);animation:fadeIn .2s ease;
+  background:var(--paper);border:1.5px solid var(--border-strong);
+  box-shadow:3px 3px 0 var(--border-strong);
+  padding:4px;gap:4px;z-index:25;
 }
 #roastBar.on{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.roast-chip{
-  font:500 10px var(--mono);letter-spacing:0.04em;
-  padding:4px 8px;border-radius:2px;
-  background:var(--surface);color:var(--paper-mute);
-  border:1px solid var(--border);transition:all .15s;
+.roast-btn{
+  font:400 10px var(--mono);letter-spacing:0.04em;
+  padding:5px 8px;background:var(--paper-subtle);
+  color:var(--ink);border:1px solid var(--border);
 }
-.roast-chip:hover{background:var(--vermilion);color:#fff;border-color:var(--vermilion)}
+.roast-btn:hover{background:var(--ink);color:var(--paper)}
 
-/* Section Headlines & Typographic Hierarchy */
-h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
-.sub{font:400 13px var(--sans);color:var(--paper-mute);margin-bottom:16px}
+/* ==============================================================
+   NEWSLETTER EDITORIAL FEED / JOURNAL
+   ============================================================== */
+h1{font:600 32px/1.05 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
+.sub{font:italic 13px var(--serif);color:var(--ink-secondary);margin-bottom:16px}
 .wrap{max-width:580px;margin:0 auto}
 
-/* Rows & Cards */
-.row{
-  display:flex;gap:12px;align-items:center;
-  padding:10px 12px;border-radius:6px;
-  background:var(--panel);border:1px solid var(--border);
-  margin-bottom:8px;transition:background .18s;
+.broadsheet-divider{
+  border:0;border-top:1px solid var(--border-strong);
+  border-bottom:1px solid var(--border);height:4px;margin:18px 0;
 }
-.row:hover{background:var(--surface)}
-.row img{width:48px;height:48px;border-radius:4px;object-fit:cover;flex:none}
-.row .t{flex:1;min-width:0}
-.row b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row span{font:400 11px var(--mono);color:var(--paper-mute);letter-spacing:0.02em}
 
-.ib{
-  width:34px;height:34px;border-radius:4px;
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--paper-mute);display:grid;place-items:center;flex:none;
-  transition:all .18s;
+/* Feed Composer */
+.composer-box{
+  background:var(--paper-card);border:1.5px solid var(--border-strong);
+  box-shadow:3px 3px 0 var(--border-strong);
+  padding:16px;margin-bottom:20px;
 }
-.ib:hover{color:var(--paper);border-color:var(--border-strong)}
-.ib.on{background:var(--vermilion);color:#fff;border-color:var(--vermilion)}
-.ib svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
-
-/* Feed & Discussion Cards */
-.feed-composer{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:8px;padding:16px;margin-bottom:20px;
+.composer-box textarea{
+  width:100%;background:none;border:0;color:var(--ink);font:inherit;
+  resize:none;min-height:50px;outline:none;
 }
-.feed-composer textarea{
-  width:100%;background:none;border:0;color:var(--paper);font:inherit;resize:none;min-height:55px;outline:none;
-}
-.composer-ftr{
+.composer-actions{
   display:flex;align-items:center;justify-content:space-between;
   padding-top:12px;border-top:1px solid var(--border);margin-top:8px;
 }
 
+/* Journal Post Card */
 .post{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:8px;padding:16px;margin-bottom:16px;
+  background:var(--paper-card);border:1.5px solid var(--border-strong);
+  box-shadow:2px 2px 0 var(--border-strong);
+  padding:16px;margin-bottom:16px;
 }
-.ph{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-.ph .av{
-  width:32px;height:32px;border-radius:4px;
-  background:var(--surface);border:1px solid var(--border-strong);
-  display:grid;place-items:center;font:700 12px var(--mono);color:var(--gold);
+.post-byline{
+  display:flex;justify-content:space-between;align-items:center;
+  font:700 10px var(--mono);color:var(--ink-secondary);
+  letter-spacing:0.1em;text-transform:uppercase;
+  padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px;
 }
-.ph small{font:400 11px var(--mono);color:var(--slate)}
-.post p{font:400 14px/1.45 var(--sans);margin-bottom:12px;color:var(--paper)}
-.post .row{background:var(--surface);margin-bottom:12px}
-.pf{display:flex;gap:18px;font:500 11px var(--mono);color:var(--paper-mute)}
-.pf button{display:flex;gap:6px;align-items:center;transition:color .18s}
-.pf button:hover{color:var(--paper)}
-.pf button.on{color:var(--vermilion)}
-.pf svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.post p{font:400 15px/1.5 var(--sans);margin-bottom:12px;color:var(--ink)}
 
-.comments-sec{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:none}
-.comments-sec.on{display:block}
-.comment-item{font-size:12px;margin-bottom:8px;display:flex;gap:8px}
-.comment-item b{font:700 11px var(--mono);color:var(--gold)}
-.comment-form{display:flex;gap:8px;margin-top:12px}
-.comment-form input{
-  flex:1;padding:8px 12px;border-radius:4px;
-  background:var(--surface);border:1px solid var(--border);
-  color:#fff;font:inherit;font-size:12px;
-}
-
-/* Chat & Messages (Architectural Thread Styling) */
-.chat-row{
+.row{
   display:flex;gap:12px;align-items:center;
-  padding:12px;border-radius:6px;background:var(--panel);
-  border:1px solid var(--border);margin-bottom:8px;
-  cursor:pointer;transition:all .18s;
+  padding:10px;background:var(--paper-subtle);
+  border:1px solid var(--border);margin-bottom:10px;
 }
-.chat-row:hover{background:var(--surface);border-color:var(--border-strong)}
-.chat-row .t{flex:1;min-width:0}
-.chat-row b{display:flex;justify-content:space-between;font-size:14px}
-.chat-row p{font:400 12px var(--sans);color:var(--paper-mute);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-row small{font:400 10px var(--mono);color:var(--slate)}
+.row img{width:46px;height:46px;border-radius:2px;object-fit:cover;border:1px solid var(--border-strong);flex:none}
+.row .t{flex:1;min-width:0}
+.row b{display:block;font:600 14px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row span{font:400 11px var(--mono);color:var(--ink-secondary)}
 
-.chat-box{display:flex;flex-direction:column;height:calc(100dvh - 130px)}
-.chat-msgs{flex:1;overflow-y:auto;padding:12px 2px;display:flex;flex-direction:column;gap:10px}
-.msg-bubble{max-width:82%;padding:10px 14px;border-radius:6px;font-size:13px;line-height:1.45}
-.msg-bubble.mine{align-self:flex-end;background:var(--surface);border:1px solid var(--border-strong);color:var(--paper)}
-.msg-bubble.other{align-self:flex-start;background:var(--panel);border:1px solid var(--border);color:var(--paper)}
-.msg-bubble .sender-label{font:700 10px var(--mono);color:var(--gold);margin-bottom:3px;display:block}
-.msg-track-card{
-  margin-top:8px;padding:8px;border-radius:4px;
-  background:rgba(0,0,0,0.35);border:1px solid var(--border);
+.ib{
+  width:32px;height:32px;border-radius:2px;
+  background:var(--paper-card);border:1px solid var(--border-strong);
+  display:grid;place-items:center;flex:none;
+}
+.ib:hover{background:var(--ink);color:var(--paper)}
+.ib.on{background:var(--ink);color:var(--paper)}
+.ib svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+.post-footer{
+  display:flex;gap:16px;padding-top:8px;border-top:1px solid var(--border);
+  font:700 10px var(--mono);letter-spacing:0.08em;
+}
+.post-footer button{display:flex;gap:6px;align-items:center}
+.post-footer button:hover{text-decoration:underline}
+.post-footer svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+.comments-area{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);display:none}
+.comments-area.on{display:block}
+.comment-line{font-size:12px;margin-bottom:6px;display:flex;gap:6px}
+.comment-line b{font:700 10px var(--mono);text-transform:uppercase}
+.comment-form{display:flex;gap:6px;margin-top:10px}
+.comment-form input{
+  flex:1;padding:8px 10px;border-radius:2px;
+  background:var(--paper-subtle);border:1px solid var(--border);
+  color:var(--ink);font:inherit;font-size:12px;
+}
+
+/* ==============================================================
+   DIRECT TRANSMISSIONS & CORRESPONDENCE
+   ============================================================== */
+.chat-entry{
+  display:flex;gap:12px;align-items:center;
+  padding:12px;background:var(--paper-card);
+  border:1px solid var(--border-strong);box-shadow:2px 2px 0 var(--border-strong);
+  margin-bottom:8px;cursor:pointer;transition:transform .15s;
+}
+.chat-entry:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--border-strong)}
+.chat-entry .t{flex:1;min-width:0}
+.chat-entry b{display:flex;justify-content:space-between;font-size:13px;text-transform:uppercase}
+.chat-entry p{font:400 12px var(--sans);color:var(--ink-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-entry small{font:400 9px var(--mono);color:var(--ink-muted)}
+
+.chat-room-layout{display:flex;flex-direction:column;height:calc(100dvh - 130px)}
+.chat-stream{flex:1;overflow-y:auto;padding:12px 0;display:flex;flex-direction:column;gap:8px}
+.bubble{
+  max-width:80%;padding:10px 14px;font-size:13px;line-height:1.45;
+  border:1px solid var(--border-strong);
+}
+.bubble.mine{align-self:flex-end;background:var(--ink);color:var(--paper)}
+.bubble.other{align-self:flex-start;background:var(--paper-card);color:var(--ink)}
+.bubble .sender-meta{font:700 9px var(--mono);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;display:block}
+.bubble.mine .sender-meta{color:var(--paper-subtle)}
+
+.bubble-track{
+  margin-top:8px;padding:6px 8px;border-radius:2px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
   display:flex;align-items:center;gap:8px;
 }
-.chat-bar{display:flex;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
-.chat-bar input{
-  flex:1;padding:12px 14px;border-radius:4px;
-  background:var(--panel);border:1px solid var(--border);
-  color:var(--paper);font:inherit;
+.bubble.other .bubble-track{background:var(--paper-subtle);border-color:var(--border)}
+
+.chat-input-bar{display:flex;gap:6px;align-items:center;padding:10px 0;border-top:2px solid var(--border-strong)}
+.chat-input-bar input{
+  flex:1;padding:10px 12px;background:var(--paper-card);
+  border:1px solid var(--border-strong);color:var(--ink);font:inherit;
 }
 
-/* Profiles & Account */
-.profile-dossier{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:8px;padding:24px 20px;text-align:center;margin-bottom:18px;
+/* ==============================================================
+   SUBSCRIBER DOSSIER (ACCOUNTS) & SPECIFICATION (SETTINGS)
+   ============================================================== */
+.dossier-card{
+  background:var(--paper-card);border:2px solid var(--border-strong);
+  box-shadow:3px 3px 0 var(--border-strong);
+  padding:24px 20px;text-align:center;margin-bottom:18px;
 }
-.profile-monogram{
-  width:72px;height:72px;border-radius:4px;margin:0 auto 14px;
-  background:var(--surface);border:1px solid var(--border-strong);
-  display:grid;place-items:center;font:700 24px var(--mono);color:var(--gold);
+.dossier-badge{
+  width:64px;height:64px;margin:0 auto 12px;
+  background:var(--ink);color:var(--paper);border-radius:50%;
+  display:grid;place-items:center;font:700 20px var(--serif);
 }
-.profile-dossier h2{font:400 28px var(--serif);margin-bottom:2px}
-.profile-handle{font:600 11px var(--mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.08em}
-.profile-bio{font:400 13px var(--sans);color:var(--paper-mute);margin:10px auto 16px;max-width:400px}
+.dossier-card h2{font:400 30px var(--serif);margin-bottom:2px}
+.dossier-id{font:700 11px var(--mono);letter-spacing:0.1em;color:var(--ink-secondary)}
+.dossier-statement{font:italic 14px var(--serif);color:var(--ink-secondary);margin:10px auto 16px;max-width:380px}
 
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-.stat-box{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:6px;padding:12px;text-align:center;
-}
-.stat-box b{font:700 22px var(--mono);display:block;color:var(--paper);margin-bottom:2px}
-.stat-box span{font:400 10px var(--mono);color:var(--slate);letter-spacing:0.08em;text-transform:uppercase}
+.ledger-table{width:100%;border-collapse:collapse;margin-bottom:20px;font:400 12px var(--mono)}
+.ledger-table th,.ledger-table td{padding:8px 10px;border:1px solid var(--border);text-align:left}
+.ledger-table th{background:var(--paper-subtle);font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
 
-/* Settings Panels */
-.settings-section{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:8px;padding:16px;margin-bottom:14px;
+.settings-box{
+  background:var(--paper-card);border:1.5px solid var(--border-strong);
+  box-shadow:2px 2px 0 var(--border-strong);
+  padding:16px;margin-bottom:16px;
 }
-.settings-section h3{font:700 11px var(--mono);letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
-.s-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
-.s-row:last-child{border-bottom:0}
-.s-row b{font-size:13px;display:block}
-.s-row p{font-size:11px;color:var(--slate)}
+.settings-box h3{
+  font:700 11px var(--mono);letter-spacing:0.12em;text-transform:uppercase;
+  padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;
+}
+.setting-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border)}
+.setting-item:last-child{border-bottom:0}
 
-.toggle-switch{
-  width:38px;height:20px;border-radius:10px;
-  background:var(--surface);border:1px solid var(--border-strong);
-  position:relative;cursor:pointer;transition:all .18s;
+.switch{
+  width:36px;height:18px;border:1.5px solid var(--border-strong);
+  position:relative;cursor:pointer;background:var(--paper);
 }
-.toggle-switch.on{background:var(--vermilion);border-color:var(--vermilion)}
-.toggle-switch i{
-  position:absolute;top:2px;left:2px;width:14px;height:14px;
-  border-radius:50%;background:#fff;transition:transform .18s;
-}
-.toggle-switch.on i{transform:translateX(18px)}
+.switch.on{background:var(--ink)}
+.switch i{position:absolute;top:1px;left:1px;width:12px;height:12px;background:var(--ink);transition:transform .15s}
+.switch.on i{transform:translateX(18px);background:var(--paper)}
 
 /* Modals */
 .modal-backdrop{
-  position:fixed;inset:0;background:rgba(9,8,13,0.85);backdrop-filter:blur(14px);
+  position:fixed;inset:0;background:rgba(20,19,18,0.7);backdrop-filter:blur(6px);
   z-index:50;display:none;align-items:center;justify-content:center;padding:16px;
 }
 .modal-backdrop.on{display:flex}
 .modal-sheet{
   width:min(100%,460px);max-height:90dvh;overflow-y:auto;
-  background:var(--panel);border:1px solid var(--border-strong);
-  border-radius:8px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,0.9);
+  background:var(--paper);border:2px solid var(--border-strong);
+  box-shadow:6px 6px 0 var(--border-strong);padding:24px;
 }
-.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.modal-top h2{font:400 24px var(--serif);letter-spacing:-0.01em}
-.modal-close-btn{font:400 20px var(--mono);color:var(--paper-mute);padding:2px 8px;border-radius:4px}
-.modal-close-btn:hover{color:var(--paper)}
+.modal-top{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:10px;border-bottom:2px solid var(--border-strong);margin-bottom:16px;
+}
+.modal-top h2{font:700 24px var(--serif);text-transform:uppercase}
 
-.btn-primary{
-  background:var(--paper);color:var(--void);
-  font:600 12px var(--mono);letter-spacing:0.06em;text-transform:uppercase;
-  padding:10px 18px;border-radius:4px;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .18s;
+.btn-solid{
+  background:var(--ink);color:var(--paper);
+  font:700 11px var(--mono);letter-spacing:0.1em;text-transform:uppercase;
+  padding:10px 18px;border:1px solid var(--ink);
+  box-shadow:2px 2px 0 var(--border-strong);display:inline-flex;align-items:center;justify-content:center;gap:6px;
 }
-.btn-primary:hover{background:#fff;box-shadow:0 0 16px rgba(255,255,255,0.25)}
-.btn-ghost{
-  background:var(--surface);color:var(--paper);border:1px solid var(--border);
-  font:600 12px var(--mono);letter-spacing:0.06em;text-transform:uppercase;
-  padding:9px 16px;border-radius:4px;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .18s;
+.btn-solid:hover{background:var(--ink-secondary)}
+.btn-outline{
+  background:var(--paper-card);color:var(--ink);
+  font:700 11px var(--mono);letter-spacing:0.1em;text-transform:uppercase;
+  padding:10px 18px;border:1px solid var(--border-strong);
+  box-shadow:2px 2px 0 var(--border-strong);display:inline-flex;align-items:center;justify-content:center;gap:6px;
 }
-.btn-ghost:hover{border-color:var(--border-strong);background:var(--surface-hover)}
-.btn-danger{background:var(--vermilion);color:#fff}
+.btn-outline:hover{background:var(--paper-subtle)}
 
-/* 2D Vibe Oscillograph */
+/* 2D Vibe Radar Oscillograph (Monochrome) */
 #vibePad{
   width:100%;aspect-ratio:1;max-height:260px;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0 1px,transparent 1px 24px),
-             repeating-linear-gradient(90deg,rgba(255,255,255,0.02) 0 1px,transparent 1px 24px),
-             var(--surface);
-  border:1px solid var(--border-strong);border-radius:4px;
-  position:relative;touch-action:none;cursor:crosshair;margin:12px 0;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.04) 0 1px,transparent 1px 24px),
+             repeating-linear-gradient(90deg,rgba(0,0,0,0.04) 0 1px,transparent 1px 24px),
+             var(--paper-card);
+  border:1.5px solid var(--border-strong);position:relative;touch-action:none;cursor:crosshair;margin:14px 0;
 }
-#vibePad .axis-x{position:absolute;left:10px;right:10px;top:50%;height:1px;background:rgba(217,168,78,0.25)}
-#vibePad .axis-y{position:absolute;top:10px;bottom:10px;left:50%;width:1px;background:rgba(217,168,78,0.25)}
+#vibePad .axis-x{position:absolute;left:8px;right:8px;top:50%;height:1px;background:var(--border-strong)}
+#vibePad .axis-y{position:absolute;top:8px;bottom:8px;left:50%;width:1px;background:var(--border-strong)}
 #vibePuck{
-  position:absolute;width:20px;height:20px;border-radius:50%;
-  background:var(--gold);box-shadow:0 0 14px var(--gold);
+  position:absolute;width:18px;height:18px;border-radius:50%;
+  background:var(--ink);border:2px solid var(--paper);box-shadow:0 0 0 1px var(--ink);
   top:50%;left:50%;translate:-50% -50%;pointer-events:none;
 }
-.pad-coord-tag{position:absolute;font:700 9px var(--mono);color:var(--slate);letter-spacing:0.08em;text-transform:uppercase}
+.pad-label{position:absolute;font:700 9px var(--mono);letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-secondary)}
 
-/* Toast */
+#auraCanvas{width:100%;max-width:320px;aspect-ratio:1;border:2px solid var(--border-strong);box-shadow:4px 4px 0 var(--border-strong);margin:0 auto 16px;display:block}
+
+/* Toast Notification (Printer Slip) */
 #toast{
   position:fixed;top:calc(env(safe-area-inset-top) + 64px);left:50%;translate:-50% -10px;
-  background:var(--paper);color:var(--void);
-  padding:6px 16px;border-radius:4px;font:700 11px var(--mono);letter-spacing:0.06em;text-transform:uppercase;
-  opacity:0;transition:.22s;z-index:90;pointer-events:none;box-shadow:0 12px 30px rgba(0,0,0,0.8);
+  background:var(--ink);color:var(--paper);
+  padding:6px 14px;border:1px solid var(--ink);
+  font:700 10px var(--mono);letter-spacing:0.1em;text-transform:uppercase;
+  opacity:0;transition:.2s;z-index:90;pointer-events:none;
+  box-shadow:3px 3px 0 rgba(0,0,0,0.3);
 }
 #toast.on{opacity:1;translate:-50% 0}
 
@@ -553,47 +523,50 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
   #app{padding-left:110px}
   nav{
     top:0;bottom:0;right:auto;width:110px;
-    flex-direction:column;justify-content:flex-start;gap:12px;
-    padding:80px 10px;border-top:0;border-right:1px solid var(--border);
+    flex-direction:column;justify-content:flex-start;gap:14px;
+    padding:80px 8px;border-top:0;border-right:2px solid var(--border-strong);
   }
   #deck{width:380px;max-height:calc(100dvh - 260px)}
 }
 </style></head>
 <body>
-<div id="bg"></div><div id="grain"></div>
+<div id="grain"></div>
 <div id="app">
-<header>
-  <div class="brand">
-    <div class="logo-disc" id="logoDisc"></div>
-    <div class="brand-text">Spindle <span>[ ARCHIVE ]</span></div>
+
+<!-- Broadsheet Masthead Header -->
+<header class="masthead">
+  <div class="masthead-meta">
+    <span>VOL. IV — NO. 26</span>
+    <span>A JOURNAL OF SOUND & DISCOVERY</span>
+    <span id="mastheadDate">OCTOBER 2026</span>
   </div>
-  <div class="header-tools">
-    <button class="tag-btn" id="btnOpenDaily" title="Daily Blind Track Challenge">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      BLIND 10
-    </button>
-    <button class="tag-btn" id="btnOpenRadar" title="2D Vibe Radar">
-      <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="7"/></svg>
-      RADAR
-    </button>
-    <div id="authSlot">
-      <button class="tag-btn" id="btnShowAuth" style="color:var(--paper)">LOG IN</button>
+  <div class="masthead-main">
+    <div>
+      <div class="gazette-title">SPINDLE</div>
+      <div class="gazette-sub">Analog Record Review & Private Archive</div>
     </div>
-    <button class="tag-btn" id="btnHeaderSettings" title="Settings" aria-label="Settings" style="padding:5px 8px">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
+    <div class="masthead-actions">
+      <button class="btn-tag" id="btnOpenDaily">[ BLIND 10 ]</button>
+      <button class="btn-tag" id="btnOpenRadar">[ VIBE RADAR ]</button>
+      <div id="authSlot">
+        <button class="btn-tag" id="btnShowAuth">[ LOG IN ]</button>
+      </div>
+      <button class="btn-tag" id="btnHeaderSettings" title="Specification" aria-label="Settings" style="padding:5px 8px">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- Time Machine Strip (Discover Only) -->
-<div class="era-strip" id="eraBar">
-  <button class="era-tag on" data-era="all">[ ALL ERAS ]</button>
-  <button class="era-tag" data-era="70s">[ 70s VINTAGE ]</button>
-  <button class="era-tag" data-era="80s">[ 80s ANALOG ]</button>
-  <button class="era-tag" data-era="90s">[ 90s GOLDEN ]</button>
-  <button class="era-tag" data-era="00s">[ 00s Y2K ]</button>
-  <button class="era-tag" data-era="10s">[ 10s STREAMING ]</button>
-  <button class="era-tag" data-era="20s">[ MODERN ]</button>
+<!-- Era Ledger Strip (Discover Only) -->
+<div class="era-ledger" id="eraBar">
+  <button class="era-link on" data-era="all">[ ALL CATALOGS ]</button>
+  <button class="era-link" data-era="70s">[ 1970s ]</button>
+  <button class="era-link" data-era="80s">[ 1980s ]</button>
+  <button class="era-link" data-era="90s">[ 1990s ]</button>
+  <button class="era-link" data-era="00s">[ 2000s ]</button>
+  <button class="era-link" data-era="10s">[ 2010s ]</button>
+  <button class="era-link" data-era="20s">[ MODERN ]</button>
 </div>
 
 <main>
@@ -603,98 +576,98 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
  
  <!-- Roast Bar Tooltip -->
  <div id="roastBar">
-   <button class="roast-chip" data-roast="Sluggish Tempo">[ Sluggish Tempo ]</button>
-   <button class="roast-chip" data-roast="Over-processed">[ Over-processed ]</button>
-   <button class="roast-chip" data-roast="Saturated Hook">[ Saturated Hook ]</button>
-   <button class="roast-chip" data-roast="Tonal Mismatch">[ Tonal Mismatch ]</button>
+   <button class="roast-btn" data-roast="Sluggish Tempo">[ Sluggish Tempo ]</button>
+   <button class="roast-btn" data-roast="Over-processed">[ Over-processed ]</button>
+   <button class="roast-btn" data-roast="Saturated Hook">[ Saturated Hook ]</button>
+   <button class="roast-btn" data-roast="Tonal Mismatch">[ Tonal Mismatch ]</button>
  </div>
 
  <div class="acts">
-  <button class="rb n" id="bn" aria-label="Pass" title="Pass Track">
+  <button class="rb n" id="bn" aria-label="Dismiss Record" title="Dismiss">
     <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
   </button>
-  <button class="rb drop" id="bDrop" aria-label="Jump to Drop" title="Skip to Chorus">
+  <button class="rb drop" id="bDrop" aria-label="Skip to Chorus" title="Climax Jump">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
     DROP
   </button>
   <button class="rb s" id="bp" aria-label="Play / Pause" title="Play / Pause">
     <svg viewBox="0 0 24 24" id="ppi"><path d="M8 5l11 7-11 7z"/></svg>
   </button>
-  <button class="rb l" id="bl" aria-label="Love" title="Love Track">
+  <button class="rb l" id="bl" aria-label="Preserve Record" title="Preserve">
     <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
   </button>
  </div>
- <p class="hint">DRAG DISK TO SCRUB • PULL DOWN FOR TAPE STOP • ARROW KEYS NAVIGATE</p>
+ <p class="hint-bar">DRAG DISC TO SCRATCH • PULL DOWN FOR TAPE STOP • ARROW KEYS NAVIGATE</p>
 </section>
 
-<!-- 2. REAL COMMUNITY FEED VIEW -->
+<!-- 2. REAL COMMUNITY JOURNAL / FEED VIEW (NO DUMMY DATA) -->
 <section class="view" id="v-feed">
   <div class="wrap">
-    <h1>Community Journal</h1>
-    <p class="sub">Dispatches and record recommendations shared by listeners worldwide.</p>
+    <h1>Dispatches & Reviews</h1>
+    <p class="sub">Dispatches, record notes, and reviews submitted by subscribers.</p>
     
-    <!-- Feed Composer -->
-    <div class="feed-composer">
-      <textarea id="composerText" placeholder="Write a dispatch or record reflection…"></textarea>
+    <!-- Composer -->
+    <div class="composer-box">
+      <textarea id="composerText" placeholder="Compose a record note or review dispatch…"></textarea>
       <div id="composerAttachedTrack" style="display:none;margin-bottom:10px"></div>
-      <div class="composer-ftr">
-        <button class="tag-btn" id="btnComposerAttach">
-          <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
-          ATTACH TRACK
+      <div class="composer-actions">
+        <button class="btn-tag" id="btnComposerAttach">
+          <svg viewBox="0 0 24 24" width="12" height="12"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+          ATTACH RECORD
         </button>
-        <button class="btn-primary" id="btnPublishPost">PUBLISH DISPATCH</button>
+        <button class="btn-solid" id="btnPublishPost">PUBLISH DISPATCH</button>
       </div>
     </div>
 
     <!-- Feed Filters -->
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="tag-btn active" id="feedTabAll">[ ALL DISPATCHES ]</button>
-      <button class="tag-btn" id="feedTabMine">[ MY ENTRIES ]</button>
+    <div style="display:flex;gap:6px;margin-bottom:16px">
+      <button class="btn-tag active" id="feedTabAll">[ ALL DISPATCHES ]</button>
+      <button class="btn-tag" id="feedTabMine">[ MY REVIEWS ]</button>
     </div>
 
     <div id="feed"></div>
   </div>
 </section>
 
-<!-- 3. INTERNAL DMs & GROUPS VIEW -->
+<!-- 3. INTERNAL DMs & CIRCLES VIEW -->
 <section class="view" id="v-messages">
   <div class="wrap">
     <!-- Chats List -->
     <div id="chatListView">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <h1>Direct Transmissions</h1>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <h1>Transmissions</h1>
         <div style="display:flex;gap:6px">
-          <button class="btn-ghost" id="btnNewDM" style="padding:6px 12px;font-size:11px">+ NEW DM</button>
-          <button class="btn-primary" id="btnNewGroup" style="padding:6px 12px;font-size:11px">+ GROUP</button>
+          <button class="btn-outline" id="btnNewDM" style="padding:6px 10px;font-size:10px">+ NEW DM</button>
+          <button class="btn-solid" id="btnNewGroup" style="padding:6px 10px;font-size:10px">+ CIRCLE</button>
         </div>
       </div>
-      <p class="sub">Private conversations and group listening circles.</p>
+      <p class="sub">Direct correspondence and group listening circles.</p>
       <div id="chatsContainer"></div>
     </div>
 
     <!-- Active Conversation View -->
-    <div id="chatRoomView" style="display:none" class="chat-box">
-      <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-        <button class="btn-ghost" id="btnBackToChats" style="padding:6px 8px">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <div id="chatRoomView" style="display:none" class="chat-room-layout">
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border-strong)">
+        <button class="btn-outline" id="btnBackToChats" style="padding:4px 8px">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
-        <div class="user-avatar-mark" id="activeChatAv" style="width:28px;height:28px;font-size:12px">SP</div>
+        <div class="dossier-badge" id="activeChatAv" style="width:30px;height:30px;font-size:11px">SP</div>
         <div style="flex:1;min-width:0">
-          <b id="activeChatTitle" style="font-size:15px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Channel</b>
-          <small id="activeChatSub" style="font:400 10px var(--mono);color:var(--slate)">TRANSMISSION ACTIVE</small>
+          <b id="activeChatTitle" style="font:700 13px var(--sans);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Channel</b>
+          <small id="activeChatSub" style="font:400 9px var(--mono);color:var(--ink-secondary)">TRANSMISSION OPEN</small>
         </div>
       </div>
 
-      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-stream" id="chatMsgs"></div>
 
-      <div id="chatAttachedSong" style="display:none;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:6px"></div>
+      <div id="chatAttachedSong" style="display:none;padding:6px 10px;background:var(--paper-subtle);border:1px solid var(--border-strong);margin-bottom:6px"></div>
 
-      <div class="chat-bar">
-        <button class="btn-ghost" id="btnChatAttachSong" title="Attach Track" style="padding:10px 12px">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+      <div class="chat-input-bar">
+        <button class="btn-outline" id="btnChatAttachSong" title="Attach Track" style="padding:8px 10px">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
         </button>
         <input type="text" id="chatMsgInput" placeholder="Write message…">
-        <button class="btn-primary" id="btnSendMsg" style="padding:10px 16px">SEND</button>
+        <button class="btn-solid" id="btnSendMsg" style="padding:8px 14px">SEND</button>
       </div>
     </div>
   </div>
@@ -704,21 +677,21 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <section class="view" id="v-blend">
   <div class="wrap">
     <h1>Spindle Blend</h1>
-    <p class="sub">Two listeners. Ten synchronous records. Simultaneous blind evaluation to reveal musical compatibility.</p>
+    <p class="sub">Two listeners evaluate ten simultaneous records to calculate harmonic compatibility.</p>
     
     <div id="blendLobby">
-      <div class="settings-section" style="margin-bottom:14px">
+      <div class="settings-box" style="margin-bottom:14px">
         <h3>Host a Synchronous Session</h3>
-        <p style="font-size:13px;color:var(--paper-mute);margin-bottom:14px">Generate a session pass-code and invite a collaborator.</p>
-        <button class="btn-primary" id="btnCreateRoom">GENERATE ROOM CODE</button>
+        <p style="font-size:13px;color:var(--ink-secondary);margin-bottom:12px">Generate an evaluation pass-code and invite a collaborator.</p>
+        <button class="btn-solid" id="btnCreateRoom">GENERATE SESSION</button>
       </div>
 
-      <div class="settings-section">
-        <h3>Connect to Session</h3>
-        <p style="font-size:13px;color:var(--paper-mute);margin-bottom:14px">Enter the 6-character room pass-code to join.</p>
-        <div style="display:flex;gap:10px">
-          <input type="text" id="joinRoomCode" placeholder="PASS-CODE" maxlength="6" style="flex:1;padding:10px 14px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:700 14px var(--mono);letter-spacing:0.12em;text-transform:uppercase">
-          <button class="btn-ghost" id="btnJoinRoom">JOIN</button>
+      <div class="settings-box">
+        <h3>Join Collaborator</h3>
+        <p style="font-size:13px;color:var(--ink-secondary);margin-bottom:12px">Enter the 6-character pass-code to begin.</p>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="joinRoomCode" placeholder="PASS-CODE" maxlength="6" style="flex:1;padding:8px 12px;background:var(--paper-subtle);border:1px solid var(--border-strong);color:var(--ink);font:700 13px var(--mono);text-transform:uppercase">
+          <button class="btn-outline" id="btnJoinRoom">CONNECT</button>
         </div>
       </div>
     </div>
@@ -731,123 +704,121 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <!-- 5. LIBRARY VIEW -->
 <section class="view" id="v-lib">
   <div class="wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div>
-        <h1>Personal Archive</h1>
-        <p class="sub" style="margin-bottom:0">All records preserved in your private collection.</p>
+        <h1>Private Ledger</h1>
+        <p class="sub" style="margin-bottom:0">All master recordings preserved in your collection.</p>
       </div>
-      <button class="btn-ghost" id="btnOpenExport">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      <button class="btn-outline" id="btnOpenExport" style="font-size:10px">
+        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         EXPORT
       </button>
     </div>
-    <div id="lib" style="margin-top:20px"></div>
+    <div id="lib" style="margin-top:16px"></div>
   </div>
 </section>
 
-<!-- 6. ACCOUNTS VIEW -->
+<!-- 6. ACCOUNTS VIEW (SUBSCRIBER DOSSIER) -->
 <section class="view" id="v-account">
   <div class="wrap">
-    <div class="profile-dossier">
-      <div class="profile-monogram" id="profAv">SP</div>
-      <h2 id="profName">Listener Profile</h2>
-      <div class="profile-handle" id="profHandle">[ @ARCHIVIST ]</div>
-      <p class="profile-bio" id="profBio">No artist statement on file. Record listening history logged below.</p>
-      <div style="display:flex;justify-content:center;gap:10px">
-        <button class="btn-ghost" id="btnEditProfile">EDIT PROFILE</button>
-        <button class="btn-ghost" id="btnOpenAuraFromProf">VIEW SOUND AURA</button>
+    <div class="dossier-card">
+      <div class="dossier-badge" id="profAv">SP</div>
+      <h2 id="profName">Archivist Dossier</h2>
+      <div class="dossier-id" id="profHandle">[ SUBSCRIBER #0082 ]</div>
+      <p class="dossier-statement" id="profBio">Private sound journal recording history logged below.</p>
+      <div style="display:flex;justify-content:center;gap:8px">
+        <button class="btn-outline" id="btnEditProfile" style="font-size:10px">EDIT DOSSIER</button>
+        <button class="btn-outline" id="btnOpenAuraFromProf" style="font-size:10px">VIEW SOUND AURA</button>
       </div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-box"><b id="profLoved">0</b><span>Preserved</span></div>
-      <div class="stat-box"><b id="profPassed">0</b><span>Dismissed</span></div>
-      <div class="stat-box"><b id="profStreak">1</b><span>Daily Run</span></div>
-    </div>
+    <table class="ledger-table">
+      <thead>
+        <tr><th>Preserved Records</th><th>Dismissed</th><th>Streak Days</th></tr>
+      </thead>
+      <tbody>
+        <tr><td id="profLoved">0</td><td id="profPassed">0</td><td id="profStreak">1</td></tr>
+      </tbody>
+    </table>
 
-    <div class="settings-section">
-      <h3>Sound Archetype DNA</h3>
+    <div class="settings-box">
+      <h3>Genre Affinities</h3>
       <div id="profGenres"></div>
     </div>
 
-    <div class="settings-section" style="margin-top:16px">
-      <h3>Authored Dispatches</h3>
+    <div class="settings-box" style="margin-top:16px">
+      <h3>Authored Reviews</h3>
       <div id="profMyPosts"></div>
     </div>
   </div>
 </section>
 
-<!-- 7. SETTINGS VIEW -->
+<!-- 7. SETTINGS VIEW (SYSTEM SPECIFICATION) -->
 <section class="view" id="v-settings">
   <div class="wrap">
-    <h1>System Parameters</h1>
-    <p class="sub">Audio playback mechanics, analog rendering, and account preferences.</p>
+    <h1>System Specification</h1>
+    <p class="sub">Audio playback mechanics, print contrast, and session controls.</p>
 
-    <div class="settings-section">
-      <h3>Audio Pipeline</h3>
-      <div class="s-row">
-        <div><b>Vinyl Friction Synthesis</b><p>Synthesize needle friction when scrubbing record disc</p></div>
-        <div class="toggle-switch on" id="togScratch"><i></i></div>
+    <div class="settings-box">
+      <h3>Audio Mechanics</h3>
+      <div class="setting-item">
+        <div><b>Vinyl Friction Scratching</b><p style="font-size:12px;color:var(--ink-secondary)">Simulate needle friction when scrubbing record disc</p></div>
+        <div class="switch on" id="togScratch"><i></i></div>
       </div>
-      <div class="s-row">
-        <div><b>Tape-Stop Inertia</b><p>Decelerate audio pitch upon downward drag gestures</p></div>
-        <div class="toggle-switch on" id="togTapeStop"><i></i></div>
+      <div class="setting-item">
+        <div><b>Tape-Stop Slowdown</b><p style="font-size:12px;color:var(--ink-secondary)">Decelerate audio pitch upon downward drag</p></div>
+        <div class="switch on" id="togTapeStop"><i></i></div>
       </div>
-      <div class="s-row">
-        <div><b>Autonomous Playback</b><p>Initiate preview audio immediately upon record load</p></div>
-        <div class="toggle-switch on" id="togAutoplay"><i></i></div>
+      <div class="setting-item">
+        <div><b>Autonomous Playback</b><p style="font-size:12px;color:var(--ink-secondary)">Autoplay audio upon record selection</p></div>
+        <div class="switch on" id="togAutoplay"><i></i></div>
       </div>
     </div>
 
-    <div class="settings-section">
+    <div class="settings-box">
       <h3>Visual Atmosphere</h3>
-      <div class="s-row">
-        <div><b>Acoustic Luminescence</b><p>Pulse background saturation to sub-bass frequencies</p></div>
-        <div class="toggle-switch on" id="togReactive"><i></i></div>
-      </div>
-      <div class="s-row">
-        <div><b>Color Palette</b><p>Select interface contrast mode</p></div>
-        <select id="selTheme" style="background:var(--surface);border:1px solid var(--border);color:var(--paper);padding:6px 12px;border-radius:4px;font:500 11px var(--mono)">
-          <option value="default">OBSIDIAN OBSIDIAN</option>
-          <option value="midnight">MIDNIGHT AMOLED</option>
-          <option value="cyber">CYBER MATRIX</option>
+      <div class="setting-item">
+        <div><b>Print Palette</b><p style="font-size:12px;color:var(--ink-secondary)">Toggle newsprint cream vs. carbon inverted</p></div>
+        <select id="selTheme" style="background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);padding:4px 8px;font:700 10px var(--mono)">
+          <option value="default">NEWSPRINT (LIGHT PAPER)</option>
+          <option value="inverted">CARBON (INVERTED PRINT)</option>
         </select>
       </div>
     </div>
 
-    <div class="settings-section">
-      <h3>Storage & Session</h3>
-      <div class="s-row">
-        <div><b>Session Identifier</b><p id="settingsEmail">Anonymous Session</p></div>
-        <button class="btn-ghost" id="btnSettingsAuth" style="padding:6px 12px;font-size:10px">LOG IN</button>
+    <div class="settings-box">
+      <h3>Session & Memory</h3>
+      <div class="setting-item">
+        <div><b>Account Identifier</b><p style="font-size:12px;color:var(--ink-secondary)" id="settingsEmail">Anonymous</p></div>
+        <button class="btn-outline" id="btnSettingsAuth" style="padding:4px 8px;font-size:10px">LOG IN</button>
       </div>
-      <div class="s-row">
-        <div><b>Flush Cache</b><p>Reset seen and dismissed track cache</p></div>
-        <button class="btn-ghost" id="btnClearCache" style="padding:6px 12px;font-size:10px">PURGE</button>
+      <div class="setting-item">
+        <div><b>Purge Cache</b><p style="font-size:12px;color:var(--ink-secondary)">Reset seen and dismissed track registry</p></div>
+        <button class="btn-outline" id="btnClearCache" style="padding:4px 8px;font-size:10px">PURGE</button>
       </div>
-      <div class="s-row">
-        <div><b>Terminate Session</b><p>Log out of current profile on this device</p></div>
-        <button class="btn-ghost btn-danger" id="btnSignOutFull" style="padding:6px 12px;font-size:10px">SIGN OUT</button>
+      <div class="setting-item">
+        <div><b>Terminate Session</b><p style="font-size:12px;color:var(--ink-secondary)">Sign out of active account on this client</p></div>
+        <button class="btn-solid" id="btnSignOutFull" style="padding:4px 8px;font-size:10px">SIGN OUT</button>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-<!-- Bottom Navigation Bar (No emojis, clean vector icons) -->
+<!-- Bottom Nav (Broadsheet Minimal) -->
 <nav>
  <button data-v="discover" class="on">
    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1"/></svg>
-   DISCOVER
+   CATALOG
  </button>
  <button data-v="feed">
-   <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+   <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
    JOURNAL
  </button>
  <button data-v="messages" id="navBtnMessages">
    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
    CHATS
-   <i class="nav-pip" id="msgDot" style="display:none"></i>
+   <i class="nav-dot" id="msgDot" style="display:none"></i>
  </button>
  <button data-v="blend">
    <svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
@@ -855,7 +826,7 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
  </button>
  <button data-v="lib">
    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/></svg>
-   ARCHIVE
+   LEDGER
  </button>
 </nav>
 </div>
@@ -866,23 +837,23 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <div id="editProfileModal" class="modal-backdrop">
   <div class="modal-sheet">
     <div class="modal-top">
-      <h2>Edit Archivist Profile</h2>
-      <button class="modal-close-btn" data-close="editProfileModal">✕</button>
+      <h2>Edit Archivist Dossier</h2>
+      <button class="btn-tag" data-close="editProfileModal">✕</button>
     </div>
     <form id="editProfileForm">
-      <div style="margin-bottom:14px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);letter-spacing:0.08em;margin-bottom:6px">DISPLAY NAME</label>
-        <input type="text" id="editName" required style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div style="margin-bottom:12px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);letter-spacing:0.1em;margin-bottom:4px">NAME OR CALLSIGN</label>
+        <input type="text" id="editName" required style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);letter-spacing:0.1em;margin-bottom:4px">HANDLE IDENTIFIER</label>
+        <input type="text" id="editHandle" placeholder="subscriber" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
       <div style="margin-bottom:14px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);letter-spacing:0.08em;margin-bottom:6px">HANDLE IDENTIFIER</label>
-        <input type="text" id="editHandle" placeholder="archivist" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);letter-spacing:0.1em;margin-bottom:4px">ARTIST STATEMENT</label>
+        <textarea id="editBio" maxlength="250" placeholder="Sound sensibilities, acoustic focus..." style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit;min-height:60px"></textarea>
       </div>
-      <div style="margin-bottom:16px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);letter-spacing:0.08em;margin-bottom:6px">ARTIST STATEMENT / BIO</label>
-        <textarea id="editBio" maxlength="250" placeholder="Sound sensibilities, acoustic focus..." style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit;min-height:70px"></textarea>
-      </div>
-      <button type="submit" class="btn-primary" style="width:100%">SAVE DOSSIER</button>
+      <button type="submit" class="btn-solid" style="width:100%">SAVE DOSSIER</button>
     </form>
   </div>
 </div>
@@ -892,22 +863,22 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
   <div class="modal-sheet">
     <div class="modal-top">
       <h2 id="newChatTitle">Establish Transmission</h2>
-      <button class="modal-close-btn" data-close="newChatModal">✕</button>
+      <button class="btn-tag" data-close="newChatModal">✕</button>
     </div>
-    <div style="display:flex;gap:6px;margin-bottom:16px">
-      <button class="tag-btn active" id="tabNewDM" style="flex:1">[ 1-ON-1 DM ]</button>
-      <button class="tag-btn" id="tabNewGroup" style="flex:1">[ GROUP CIRCLE ]</button>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="btn-tag active" id="tabNewDM" style="flex:1">[ 1-ON-1 DM ]</button>
+      <button class="btn-tag" id="tabNewGroup" style="flex:1">[ CIRCLE ]</button>
     </div>
     <form id="newChatForm">
-      <div id="grpFields" style="display:none;margin-bottom:14px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);margin-bottom:6px">CIRCLE TITLE</label>
-        <input type="text" id="grpName" placeholder="Late Night Vinyl Club" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div id="grpFields" style="display:none;margin-bottom:12px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:4px">CIRCLE TITLE</label>
+        <input type="text" id="grpName" placeholder="Late Night Vinyl Circle" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
-      <div style="margin-bottom:16px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);margin-bottom:6px" id="lblChatTarget">RECIPIENT EMAIL</label>
-        <input type="email" id="chatTargetEmail" required placeholder="collaborator@example.com" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div style="margin-bottom:14px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:4px" id="lblChatTarget">RECIPIENT EMAIL</label>
+        <input type="email" id="chatTargetEmail" required placeholder="collaborator@example.com" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
-      <button type="submit" class="btn-primary" style="width:100%" id="btnCreateChatSubmit">INITIATE CHANNEL</button>
+      <button type="submit" class="btn-solid" style="width:100%" id="btnCreateChatSubmit">INITIATE CHANNEL</button>
     </form>
   </div>
 </div>
@@ -916,10 +887,10 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <div id="selectSongModal" class="modal-backdrop">
   <div class="modal-sheet">
     <div class="modal-top">
-      <h2>Attach Archived Track</h2>
-      <button class="modal-close-btn" data-close="selectSongModal">✕</button>
+      <h2>Attach Track</h2>
+      <button class="btn-tag" data-close="selectSongModal">✕</button>
     </div>
-    <p class="sub">Select a preserved record from your collection.</p>
+    <p class="sub">Select a preserved master from your ledger.</p>
     <div id="selectSongList" style="max-height:360px;overflow-y:auto"></div>
   </div>
 </div>
@@ -928,36 +899,36 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <div id="vibeModal" class="modal-backdrop">
   <div class="modal-sheet">
     <div class="modal-top">
-      <h2>2D Coordinate Scope</h2>
-      <button class="modal-close-btn" data-close="vibeModal">✕</button>
+      <h2>Coordinate Scope</h2>
+      <button class="btn-tag" data-close="vibeModal">✕</button>
     </div>
-    <p class="sub">Position the puck to bias the algorithmic selection stream.</p>
+    <p class="sub">Position indicator to bias the catalog recommendation engine.</p>
     <div id="vibePad">
       <div class="axis-x"></div>
       <div class="axis-y"></div>
-      <span class="pad-coord-tag" style="top:8px;left:50%;translate:-50% 0">MODERN / SYNTHETIC</span>
-      <span class="pad-coord-tag" style="bottom:8px;left:50%;translate:-50% 0">ORGANIC / ACOUSTIC</span>
-      <span class="pad-coord-tag" style="left:8px;top:50%;translate:0 -50%">MEDITATIVE</span>
-      <span class="pad-coord-tag" style="right:8px;top:50%;translate:0 -50%">KINETIC</span>
+      <span class="pad-label" style="top:6px;left:50%;translate:-50% 0">MODERN / SYNTH</span>
+      <span class="pad-label" style="bottom:6px;left:50%;translate:-50% 0">ORGANIC / ACOUSTIC</span>
+      <span class="pad-label" style="left:6px;top:50%;translate:0 -50%">MEDITATIVE</span>
+      <span class="pad-label" style="right:6px;top:50%;translate:0 -50%">KINETIC</span>
       <div id="vibePuck"></div>
     </div>
-    <div style="text-align:center;font:700 11px var(--mono);color:var(--gold);margin-bottom:16px" id="vibeCurrent">COORDINATES: BALANCED</div>
-    <button class="btn-primary" style="width:100%" id="btnApplyVibe">APPLY HARMONIC FILTER</button>
+    <div style="text-align:center;font:700 10px var(--mono);color:var(--ink);margin-bottom:14px" id="vibeCurrent">COORDINATES: BALANCED</div>
+    <button class="btn-solid" style="width:100%" id="btnApplyVibe">APPLY HARMONIC FILTER</button>
   </div>
 </div>
 
-<!-- 5. SOUND AURA MODAL -->
+<!-- 5. SOUND AURA MODAL (LITHOGRAPH STYLE) -->
 <div id="auraModal" class="modal-backdrop">
   <div class="modal-sheet" style="text-align:center">
     <div class="modal-top">
-      <h2>Sound Aura Chromatic Card</h2>
-      <button class="modal-close-btn" data-close="auraModal">✕</button>
+      <h2>Sound Aura Lithograph</h2>
+      <button class="btn-tag" data-close="auraModal">✕</button>
     </div>
-    <p class="sub">Chromatic fingerprint mapped from your listening history.</p>
+    <p class="sub">Monochrome harmonic plate generated from listening data.</p>
     <canvas id="auraCanvas" width="700" height="700"></canvas>
-    <div style="display:flex;justify-content:center;gap:10px">
-      <button class="btn-primary" id="btnDownloadAura">DOWNLOAD ARCHIVE CARD</button>
-      <button class="btn-ghost" id="btnShareAura">SHARE</button>
+    <div style="display:flex;justify-content:center;gap:8px">
+      <button class="btn-solid" id="btnDownloadAura">DOWNLOAD PLATE</button>
+      <button class="btn-outline" id="btnShareAura">SHARE</button>
     </div>
   </div>
 </div>
@@ -966,20 +937,22 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <div id="exportModal" class="modal-backdrop">
   <div class="modal-sheet">
     <div class="modal-top">
-      <h2>Export Archive</h2>
-      <button class="modal-close-btn" data-close="exportModal">✕</button>
+      <h2>Export Ledger</h2>
+      <button class="btn-tag" data-close="exportModal">✕</button>
     </div>
-    <p class="sub">Transfer your discovered record catalog to external streaming libraries.</p>
-    <div class="settings-section" style="margin-bottom:12px">
+    <p class="sub">Transfer your discovered records to Spotify or universal manifest.</p>
+    <div class="settings-box" style="margin-bottom:12px">
       <h3>Spotify Direct Connect</h3>
-      <p style="font-size:12px;color:var(--paper-mute);margin-bottom:12px">Search top preserved records directly on Spotify.</p>
-      <button class="btn-primary" id="btnExportSpotify">LAUNCH SPOTIFY</button>
+      <p style="font-size:12px;color:var(--ink-secondary);margin-bottom:10px">Search top preserved records directly on Spotify.</p>
+      <button class="btn-solid" id="btnExportSpotify">LAUNCH SPOTIFY</button>
     </div>
-    <div class="settings-section">
-      <h3>Universal Text / CSV Manifest</h3>
-      <p style="font-size:12px;color:var(--paper-mute);margin-bottom:12px">Compatible with SongShift and TuneMyMusic.</p>
-      <button class="btn-ghost" id="btnDownloadCSV">DOWNLOAD .CSV</button>
-      <button class="btn-ghost" id="btnCopyTracklist">COPY MANIFEST</button>
+    <div class="settings-box">
+      <h3>Universal Manifest (.CSV)</h3>
+      <p style="font-size:12px;color:var(--ink-secondary);margin-bottom:10px">Compatible with SongShift, TuneMyMusic, and Soundiiz.</p>
+      <div style="display:flex;gap:6px">
+        <button class="btn-outline" id="btnDownloadCSV">DOWNLOAD .CSV</button>
+        <button class="btn-outline" id="btnCopyTracklist">COPY TEXT</button>
+      </div>
     </div>
   </div>
 </div>
@@ -989,14 +962,14 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
   <div class="modal-sheet">
     <div class="modal-top">
       <h2>Daily Blind Session</h2>
-      <button class="modal-close-btn" data-close="dailyModal">✕</button>
+      <button class="btn-tag" data-close="dailyModal">✕</button>
     </div>
-    <p class="sub">Ten mystery records with masked identifiers. Evaluate sound purely without graphic bias.</p>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px;text-align:center;margin-bottom:16px">
-      <b style="font:700 24px var(--mono);display:block;color:var(--gold)" id="dailyStreakText">RUN: 1 DAY</b>
-      <span style="font:400 11px var(--mono);color:var(--slate)">CONTINUOUS INTUITION STREAK</span>
+    <p class="sub">Ten mystery tracks with masked labels. Evaluate purely with your ears.</p>
+    <div style="background:var(--paper-card);border:1.5px solid var(--border-strong);padding:14px;text-align:center;margin-bottom:14px">
+      <b style="font:700 24px var(--mono);display:block" id="dailyStreakText">RUN: 1 DAY</b>
+      <span style="font:400 10px var(--mono);color:var(--ink-secondary)">INTUITION STREAK</span>
     </div>
-    <button class="btn-primary" style="width:100%" id="btnStartDaily">START BLIND SESSION</button>
+    <button class="btn-solid" style="width:100%" id="btnStartDaily">START BLIND SESSION</button>
   </div>
 </div>
 
@@ -1004,36 +977,36 @@ h1{font:400 34px/1 var(--serif);letter-spacing:-0.02em;margin:8px 0 4px}
 <div id="authModal" class="modal-backdrop">
   <div class="modal-sheet" style="width:min(100%,400px)">
     <div class="modal-top">
-      <h2 id="authTitle">Archivist Access</h2>
-      <button class="modal-close-btn" data-close="authModal">✕</button>
+      <h2 id="authTitle">Subscriber Access</h2>
+      <button class="btn-tag" data-close="authModal">✕</button>
     </div>
-    <p class="sub" id="authSub">Sign in to synchronize your private archive and access listening rooms.</p>
+    <p class="sub" id="authSub">Sign in to synchronize private ledger and author reviews.</p>
     
-    <div style="display:flex;gap:6px;margin-bottom:16px">
-      <button class="tag-btn active" id="tabLogin" style="flex:1;text-align:center">[ LOG IN ]</button>
-      <button class="tag-btn" id="tabSignup" style="flex:1;text-align:center">[ REGISTER ]</button>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="btn-tag active" id="tabLogin" style="flex:1;text-align:center">[ LOG IN ]</button>
+      <button class="btn-tag" id="tabSignup" style="flex:1;text-align:center">[ REGISTER ]</button>
     </div>
 
     <form id="authForm">
-      <div id="authError" style="display:none;padding:10px;border-radius:4px;background:rgba(232,69,52,0.15);border:1px solid var(--vermilion);color:var(--vermilion);font:500 11px var(--mono);margin-bottom:12px"></div>
-      <div id="nameGrp" style="display:none;margin-bottom:12px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);margin-bottom:4px">CALLSIGN / NAME</label>
-        <input type="text" id="authName" placeholder="Archivist" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div id="authError" style="display:none;padding:8px 10px;background:var(--paper-subtle);border:1px solid var(--ink);color:var(--ink);font:500 10px var(--mono);margin-bottom:12px"></div>
+      <div id="nameGrp" style="display:none;margin-bottom:10px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:4px">CALLSIGN</label>
+        <input type="text" id="authName" placeholder="Archivist" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
-      <div style="margin-bottom:12px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);margin-bottom:4px">EMAIL IDENTIFIER</label>
-        <input type="email" id="authEmail" required placeholder="user@domain.com" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div style="margin-bottom:10px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:4px">EMAIL ADDRESS</label>
+        <input type="email" id="authEmail" required placeholder="user@domain.com" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
-      <div style="margin-bottom:16px">
-        <label style="display:block;font:700 10px var(--mono);color:var(--slate);margin-bottom:4px">KEYWORD PASS</label>
-        <input type="password" id="authPass" required minlength="6" placeholder="••••••••" style="width:100%;padding:10px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:#fff;font:inherit">
+      <div style="margin-bottom:14px">
+        <label style="display:block;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:4px">PASSWORD</label>
+        <input type="password" id="authPass" required minlength="6" placeholder="••••••••" style="width:100%;padding:8px 10px;background:var(--paper-card);border:1px solid var(--border-strong);color:var(--ink);font:inherit">
       </div>
-      <button type="submit" class="btn-primary" style="width:100%" id="authSubmitBtn">AUTHORIZE</button>
+      <button type="submit" class="btn-solid" style="width:100%" id="authSubmitBtn">AUTHORIZE</button>
     </form>
 
-    <div style="display:flex;align-items:center;margin:16px 0;color:var(--slate);font:400 10px var(--mono)"><span style="flex:1;height:1px;background:var(--border)"></span><span style="padding:0 8px">FEDERATED AUTH</span><span style="flex:1;height:1px;background:var(--border)"></span></div>
+    <div style="display:flex;align-items:center;margin:14px 0;font:400 9px var(--mono);color:var(--ink-muted)"><span style="flex:1;height:1px;background:var(--border)"></span><span style="padding:0 8px">FEDERATED ACCESS</span><span style="flex:1;height:1px;background:var(--border)"></span></div>
 
-    <button class="btn-ghost" id="btnGoogle" style="width:100%" type="button">CONTINUE WITH GOOGLE</button>
+    <button class="btn-outline" id="btnGoogle" style="width:100%" type="button">CONTINUE WITH GOOGLE</button>
   </div>
 </div>
 
@@ -1088,24 +1061,17 @@ try { analytics = getAnalytics(app); } catch(e) {}
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* Core App State & Helpers */
+/* State & Constants */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LS='spindle.v4.art';
+const LS='spindle.v5.journal';
 let S={
   liked:[],noped:[],seen:[],genre:{},artist:{},decade:{},posts:[],
   roasts:{},streak:1,lastDaily:'',
   userProfile:{bio:'',handle:''},
-  settings:{scratch:true,tapeStop:true,autoplay:true,reactive:true,theme:'default'}
+  settings:{scratch:true,tapeStop:true,autoplay:true,theme:'default'}
 };
 try{Object.assign(S,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
-
-const PALETTE=['#e84534','#d9a84e','#4ecdc4','#8b7cf6','#f97316','#10b981'];
-const getUserColor=id=>{
-  let hash=0;
-  for(let i=0;i<(id||'').length;i++) hash=id.charCodeAt(i)+((hash<<5)-hash);
-  return PALETTE[Math.abs(hash)%PALETTE.length];
-};
 
 let currentUser=null;
 let firestorePosts=[];
@@ -1133,7 +1099,6 @@ function syncUserToFirestore(){
         email:userEmail,
         handle:(S.userProfile?.handle||'').slice(0,30),
         bio:(S.userProfile?.bio||'').slice(0,250),
-        avatarColor:getUserColor(currentUser.uid),
         liked:S.liked,
         noped:S.noped,
         seen:S.seen,
@@ -1147,7 +1112,7 @@ function syncUserToFirestore(){
   },600);
 }
 
-const SEEDS=['jazz','indie rock','electronic','soul funk','ambient','alternative','afrobeats','folk','bossa nova','post-punk','synthwave','classical'];
+const SEEDS=['jazz','indie rock','electronic','soul funk','ambient','folk','bossa nova','post-punk','synthwave','classical'];
 const pick=a=>a[Math.random()*a.length|0];
 const dec=t=>t.year?Math.floor(t.year/10)*10+'s':'?';
 
@@ -1156,23 +1121,14 @@ audio.crossOrigin="anonymous";
 audio.volume=.85;
 
 /* ==============================================================
-   1. WEB AUDIO API & VINYL SCRATCHING
+   1. WEB AUDIO SCRATCHING SYNTHESIS
    ============================================================== */
-let audioCtx=null,analyser=null,sourceNode=null,dataArray=null;
+let audioCtx=null;
 function initWebAudio(){
   if(audioCtx) return;
   try{
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     audioCtx=new AudioContextClass();
-    analyser=audioCtx.createAnalyser();
-    analyser.fftSize=64;
-    dataArray=new Uint8Array(analyser.frequencyBinCount);
-    try{
-      sourceNode=audioCtx.createMediaElementSource(audio);
-      sourceNode.connect(analyser);
-      analyser.connect(audioCtx.destination);
-    }catch(err){}
-    requestAnimationFrame(renderAudioReactivity);
   }catch(e){}
 }
 
@@ -1180,33 +1136,20 @@ function playScratchSound(intensity=1){
   if(!S.settings.scratch || !audioCtx) return;
   try{
     if(audioCtx.state==='suspended') audioCtx.resume();
-    const bufferSize=audioCtx.sampleRate*0.07;
+    const bufferSize=audioCtx.sampleRate*0.06;
     const buffer=audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate);
     const data=buffer.getChannelData(0);
     for(let i=0;i<bufferSize;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(bufferSize*0.35));
     const noise=audioCtx.createBufferSource();
     noise.buffer=buffer;
     const filter=audioCtx.createBiquadFilter();
-    filter.type="bandpass";filter.frequency.value=750+intensity*1100;filter.Q.value=3.2;
+    filter.type="bandpass";filter.frequency.value=700+intensity*1000;filter.Q.value=3.2;
     const gain=audioCtx.createGain();
-    gain.gain.setValueAtTime(0.3*intensity,audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.06);
+    gain.gain.setValueAtTime(0.28*intensity,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.05);
     noise.connect(filter);filter.connect(gain);gain.connect(audioCtx.destination);
     noise.start();
   }catch(err){}
-}
-
-function renderAudioReactivity(){
-  if(analyser && playing && S.settings.reactive){
-    analyser.getByteFrequencyData(dataArray);
-    const bass=dataArray.slice(0,4).reduce((a,b)=>a+b,0)/4/255;
-    const bg=$('#bg');
-    if(bg){
-      bg.style.transform=`scale(${1+bass*0.05})`;
-      bg.style.filter=`blur(85px) saturate(${1.2+bass*0.4}) brightness(${0.7+bass*0.15})`;
-    }
-  }
-  requestAnimationFrame(renderAudioReactivity);
 }
 
 $('#bDrop').onclick=()=>{
@@ -1215,11 +1158,11 @@ $('#bDrop').onclick=()=>{
   if(!audio.src || audio.src!==deck[0].prev) play(deck[0]);
   audio.currentTime=Math.min(audio.duration?audio.duration-4:24, 14);
   playScratchSound(2);
-  toast('TRANSITION TO CLIMAX');
+  toast('CLIMAX DROP JUMP');
 };
 
 /* ==============================================================
-   2. MUSIC SEARCH & ARCHIVE CANDIDATES
+   2. MUSIC SEARCH & CATALOG CANDIDATES
    ============================================================== */
 async function search(q,l=25){
  const j=await new Promise((ok,bad)=>{
@@ -1239,7 +1182,7 @@ const score=t=>(S.genre[t.genre]||0)+1.5*(S.artist[t.artist]||0)+.5*(S.decade[de
 
 async function candidates(){
  let queries=[];
- if(selectedEra==='70s') queries.push(['1970s rock soul funk',25]);
+ if(selectedEra==='70s') queries.push(['1970s rock soul funk vinyl',25]);
  else if(selectedEra==='80s') queries.push(['1980s new wave synth post punk',25]);
  else if(selectedEra==='90s') queries.push(['1990s alternative golden hip hop',25]);
  else if(selectedEra==='00s') queries.push(['2000s indie r&b electronic',25]);
@@ -1275,15 +1218,15 @@ async function candidates(){
 async function refill(){
  if(loading)return;loading=true;
  try{const c=await candidates();deck.push(...c);if(!c.length&&!deck.length)throw 0}
- catch(e){if(!deck.length)$('#deck').innerHTML='<div class="empty"><div style="font:400 12px var(--mono)">[ ARCHIVE ACCESS ERROR ]<br><span style="color:var(--slate)">Tap anywhere to reconnect catalog</span></div></div>',$('#deck').onclick=()=>{$('#deck').onclick=null;refill()}}
+ catch(e){if(!deck.length)$('#deck').innerHTML='<div class="empty" style="font:400 11px var(--mono)">[ CATALOG ACCESS INTERRUPTED ]<br><span style="text-decoration:underline">Tap to retry master connection</span></div>',$('#deck').onclick=()=>{$('#deck').onclick=null;refill()}}
  loading=false;renderDeck();
 }
 
 /* ==============================================================
-   3. VINYL DECK RENDERING & SCRATCHING
+   3. VINYL DECK RENDERING & GESTURES
    ============================================================== */
 function renderDeck(){
- const el=$('#deck');if(!deck.length){if(!el.onclick)el.innerHTML='<div class="empty" style="font:400 12px var(--mono)">LOCATING ANALOG MASTERS…</div>';return}
+ const el=$('#deck');if(!deck.length){if(!el.onclick)el.innerHTML='<div class="empty" style="font:400 11px var(--mono)">PULLING CATALOG MASTERS…</div>';return}
  el.innerHTML='<div class="disc'+(playing?' play':'')+'" id="mainDisc"></div>';
  deck.slice(0,3).map((t,i)=>{
   const c=document.createElement('div');c.className='card'+(isBlindMode?' blind-card':'');c.dataset.i=i;
@@ -1294,27 +1237,27 @@ function renderDeck(){
   const catalogNum=`#SP-${t.id.toString().slice(-4)}`;
 
   c.innerHTML=`
-    <img src="${esc(t.art)}" alt="" draggable="false">
-    <div class="shade"></div>
-    <div class="card-catalog-meta">
-      <span class="catalog-badge">${catalogNum}</span>
-      <span class="catalog-badge">33⅓ RPM • STEREO</span>
+    <div class="art-container">
+      <img src="${esc(t.art)}" alt="" draggable="false">
+      <div class="card-label-strip">
+        <span>${catalogNum}</span>
+        <span>33⅓ RPM • STEREO</span>
+      </div>
+      ${i?'':'<button class="pp" aria-label="Play Recording">'+(playing?'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>':'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>')+'</button>'}
     </div>
     <div class="stamp like">PRESERVE</div>
     <div class="stamp nope">DISMISS</div>
-    ${i?'':'<button class="pp" aria-label="Play Track">'+(playing?'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>':'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>')+'</button>'}
     <div class="meta">
-      <span class="genre-chip">${esc(t.genre)}${t.year?' • '+t.year:''}</span>
+      <span class="genre-stamp">${esc(t.genre)}${t.year?' • '+t.year:''}</span>
       <h2>${titleDisplay}</h2>
-      <p class="artist-name">${artistDisplay}</p>
-      <div class="needle-bar"><i></i></div>
+      <p class="artist-credit">${artistDisplay}</p>
+      <div class="progress-rule"><i></i></div>
     </div>
   `;
   return c}).reverse().forEach(c=>el.appendChild(c));
 
  bindCard($('.card[data-i="0"]'));
  bindDisc($('#mainDisc'));
- $('#bg').style.backgroundImage=`url("${deck[0].art}")`;
  if(unlocked && S.settings.autoplay) play(deck[0]);
 }
 
@@ -1404,7 +1347,7 @@ function showRoastPopup(){
   const rb=$('#roastBar');rb.classList.add('on');
   clearTimeout(roastTimer);roastTimer=setTimeout(()=>rb.classList.remove('on'),2800);
 }
-$$('.roast-chip').forEach(btn=>btn.onclick=e=>{
+$$('.roast-btn').forEach(btn=>btn.onclick=e=>{
   const roast=e.target.dataset.roast;
   S.roasts[roast]=(S.roasts[roast]||0)+1;saveLocal();
   toast('TUNED: '+roast);
@@ -1417,19 +1360,18 @@ function toggle(){unlocked=true;initWebAudio();if(!deck.length)return;if(!audio.
 function setP(p){
   playing=p;
   $('.disc')?.classList.toggle('play',p);
-  $('#logoDisc')?.classList.toggle('paused',!p);
   const b=$('.pp');
   if(b) b.innerHTML=p?'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>':'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   $('#ppi').innerHTML=p?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':'<path d="M8 5v14l11-7z"/>';
 }
-audio.ontimeupdate=()=>{const i=$('.card[data-i="0"] .needle-bar i');if(i&&audio.duration)i.style.width=audio.currentTime/audio.duration*100+'%'};
+audio.ontimeupdate=()=>{const i=$('.card[data-i="0"] .progress-rule i');if(i&&audio.duration)i.style.width=audio.currentTime/audio.duration*100+'%'};
 audio.onended=()=>setP(false);
 
 $('#bn').onclick=()=>fling(-1);$('#bl').onclick=()=>fling(1);$('#bp').onclick=toggle;
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')fling(1);else if(e.key==='ArrowLeft')fling(-1);else if(e.key===' '){e.preventDefault();toggle()}});
 
-$$('.era-tag[data-era]').forEach(btn=>btn.onclick=()=>{
-  $$('.era-tag[data-era]').forEach(b=>b.classList.toggle('on',b===btn));
+$$('.era-link[data-era]').forEach(btn=>btn.onclick=()=>{
+  $$('.era-link[data-era]').forEach(b=>b.classList.toggle('on',b===btn));
   selectedEra=btn.dataset.era;deck=[];refill();toast(btn.textContent);
 });
 
@@ -1485,7 +1427,7 @@ document.addEventListener('click',async e=>{
 
  const fl=e.target.closest('[data-post-like]');
  if(fl){
-   if(!currentUser){openAuthModal('Sign in to endorse dispatches.');return}
+   if(!currentUser){openAuthModal('Sign in to endorse reviews.');return}
    const postId=fl.dataset.postLike;
    const post=firestorePosts.find(x=>x.id===postId);
    const isLiked=post?.likedBy?.includes(currentUser.uid);
@@ -1505,12 +1447,12 @@ document.addEventListener('click',async e=>{
 });
 
 /* ==============================================================
-   5. REAL COMMUNITY JOURNAL & FEED (NO DUMMY DATA)
+   5. REAL COMMUNITY JOURNAL & REVIEWS (NO DUMMY DATA)
    ============================================================== */
 let feedFilter='all';
 
 $('#btnComposerAttach').onclick=()=>{
-  if(!S.liked.length) return toast('Preserve records in Discover first to attach them.');
+  if(!S.liked.length) return toast('Preserve records in Catalog first.');
   attachTarget='composer';
   openSongSelectModal();
 };
@@ -1521,7 +1463,7 @@ function openSongSelectModal(){
     <div class="row" style="cursor:pointer" data-select-song="${t.id}">
       <img src="${esc(t.art)}">
       <div class="t"><b>${esc(t.name)}</b><span>${esc(t.artist)}</span></div>
-      <button class="btn-ghost" style="padding:4px 10px;font-size:10px">SELECT</button>
+      <button class="btn-outline" style="padding:4px 8px;font-size:9px">SELECT</button>
     </div>
   `).join('');
   $('#selectSongModal').classList.add('on');
@@ -1534,11 +1476,11 @@ document.addEventListener('click',e=>{
     if(track){
       if(attachTarget==='composer'){
         composerTrack=track;
-        $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-ghost" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'" style="padding:4px 8px;font-size:11px">✕</button>`);
+        $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-outline" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'" style="padding:2px 6px;font-size:10px">✕</button>`);
         $('#composerAttachedTrack').style.display='block';
       } else if(attachTarget==='chat'){
         chatAttachedTrack=track;
-        $('#chatAttachedSong').innerHTML=`<span style="font:700 11px var(--mono)">[ ATTACHED: ${esc(track.name)} ]</span> <button class="btn-ghost" onclick="chatAttachedTrack=null;$('#chatAttachedSong').style.display='none'" style="padding:2px 6px;margin-left:8px;font-size:10px">✕</button>`;
+        $('#chatAttachedSong').innerHTML=`<span style="font:700 10px var(--mono)">[ ATTACHED: ${esc(track.name)} ]</span> <button class="btn-outline" onclick="chatAttachedTrack=null;$('#chatAttachedSong').style.display='none'" style="padding:2px 6px;margin-left:8px;font-size:9px">✕</button>`;
         $('#chatAttachedSong').style.display='block';
       }
     }
@@ -1549,17 +1491,16 @@ document.addEventListener('click',e=>{
 $('#btnPublishPost').onclick=async()=>{
   if(!currentUser){openAuthModal('Sign in to publish dispatches.');return}
   const caption=$('#composerText').value.trim();
-  if(!caption && !composerTrack) return toast('Enter text or attach an archive track.');
+  if(!caption && !composerTrack) return toast('Enter review text or attach a record.');
 
   const trackToPost=composerTrack||(S.liked.length?S.liked[0]:null);
-  if(!trackToPost) return toast('Preserve a record in Discover first.');
+  if(!trackToPost) return toast('Preserve a record in Catalog first.');
 
   try{
     await addDoc(collection(db,'posts'),{
       uid:currentUser.uid,
-      authorName:(currentUser.displayName||'Archivist').slice(0,100),
-      authorHandle:(S.userProfile?.handle||'archivist').slice(0,30),
-      authorColor:getUserColor(currentUser.uid),
+      authorName:(currentUser.displayName||'Subscriber').slice(0,100),
+      authorHandle:(S.userProfile?.handle||'subscriber').slice(0,30),
       authorEmail:currentUser.email||'',
       caption:caption.slice(0,500),
       track:{
@@ -1580,7 +1521,7 @@ $('#btnPublishPost').onclick=async()=>{
     $('#composerText').value='';
     composerTrack=null;
     $('#composerAttachedTrack').style.display='none';
-    toast('DISPATCH LOGGED');
+    toast('DISPATCH LOGGED TO JOURNAL');
   }catch(err){
     toast('ERROR LOGGING ENTRY');
   }
@@ -1597,7 +1538,7 @@ function renderFeed(){
   }
 
   if(!posts.length){
-    el.innerHTML=`<div class="empty"><div style="font:400 12px var(--mono)">[ NO DISPATCHES LOGGED YET ]<br><span style="color:var(--slate)">Be the first to publish a record reflection above</span></div></div>`;
+    el.innerHTML=`<div class="empty" style="font:400 11px var(--mono)">[ NO ENTRIES IN JOURNAL ]<br><span style="text-decoration:underline">Be the first to publish a record review above</span></div>`;
     return;
   }
 
@@ -1608,19 +1549,16 @@ function renderFeed(){
     const commentsList=p.comments||[];
     return `
       <article class="post">
-        <div class="ph">
-          <div class="av">${esc((p.authorName||'A')[0].toUpperCase())}</div>
-          <div>
-            <b>${esc(p.authorName||'Archivist')}</b>
-            <small>[ @${esc(p.authorHandle||'curator')} ]</small>
-          </div>
+        <div class="post-byline">
+          <span>REVIEW BY ${esc(p.authorName||'SUBSCRIBER').toUpperCase()}</span>
+          <span>@${esc(p.authorHandle||'ARCHIVIST').toUpperCase()}</span>
         </div>
         ${p.caption?`<p>${esc(p.caption)}</p>`:''}
         ${t?rowH(t,`<button class="ib${S.liked.some(x=>x.id===t.id)?' on':''}" data-love="${t.id}" aria-label="Preserve">${heartIcon}</button>`):''}
-        <div class="pf">
-          <button data-post-like="${p.id}" class="${isLiked?'on':''}">
+        <div class="post-footer">
+          <button data-post-like="${p.id}">
             <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            ${p.likesCount||0}
+            ${p.likesCount||0} ENDORSEMENTS
           </button>
           <button data-toggle-comments="${p.id}">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1628,13 +1566,13 @@ function renderFeed(){
           </button>
         </div>
         
-        <div class="comments-sec" id="comments-${p.id}">
-          <div id="commentList-${p.id}">
-            ${commentsList.map(c=>`<div class="comment-item"><b>${esc(c.authorName)}</b><span>${esc(c.text)}</span></div>`).join('')}
+        <div class="comments-area" id="comments-${p.id}">
+          <div>
+            ${commentsList.map(c=>`<div class="comment-line"><b>${esc(c.authorName)}:</b><span>${esc(c.text)}</span></div>`).join('')}
           </div>
           <form class="comment-form" onsubmit="event.preventDefault();submitComment('${p.id}',this)">
-            <input type="text" placeholder="Add archival note…" required>
-            <button class="btn-primary" style="padding:6px 12px;font-size:10px">POST</button>
+            <input type="text" placeholder="Add commentary…" required>
+            <button class="btn-solid" style="padding:4px 8px;font-size:9px">RECORD</button>
           </form>
         </div>
       </article>
@@ -1651,7 +1589,7 @@ window.submitComment=async(postId,form)=>{
   try{
     const newComment={
       authorUid:currentUser.uid,
-      authorName:currentUser.displayName||'Archivist',
+      authorName:currentUser.displayName||'Subscriber',
       text:text.slice(0,300),
       createdAt:new Date().toISOString()
     };
@@ -1659,7 +1597,7 @@ window.submitComment=async(postId,form)=>{
       comments:arrayUnion(newComment),
       commentsCount:increment(1)
     });
-    toast('NOTE ATTACHED');
+    toast('NOTE RECORDED');
   }catch(err){}
 };
 
@@ -1675,16 +1613,16 @@ try{
 }catch(err){}
 
 /* ==============================================================
-   6. INTERNAL DMs & GROUP CHAT
+   6. TRANSMISSIONS (DMs & CIRCLES)
    ============================================================== */
 let activeChats=[];
 
 $('#btnNewDM').onclick=()=>{
-  if(!currentUser){openAuthModal('Sign in to open transmissions');return}
+  if(!currentUser){openAuthModal('Sign in to open transmission');return}
   $('#newChatTitle').textContent='Direct Channel';
   $('#grpFields').style.display='none';
   $('#lblChatTarget').textContent='RECIPIENT EMAIL';
-  $('#chatTargetEmail').placeholder='collaborator@domain.com';
+  $('#chatTargetEmail').placeholder='recipient@domain.com';
   $('#tabNewDM').classList.add('active');$('#tabNewGroup').classList.remove('active');
   $('#newChatModal').classList.add('on');
 };
@@ -1694,7 +1632,7 @@ $('#btnNewGroup').onclick=()=>{
   $('#newChatTitle').textContent='Listening Circle';
   $('#grpFields').style.display='block';
   $('#lblChatTarget').textContent='COLLABORATOR EMAIL';
-  $('#chatTargetEmail').placeholder='collaborator@domain.com';
+  $('#chatTargetEmail').placeholder='recipient@domain.com';
   $('#tabNewGroup').classList.add('active');$('#tabNewDM').classList.remove('active');
   $('#newChatModal').classList.add('on');
 };
@@ -1713,10 +1651,9 @@ $('#newChatForm').onsubmit=async e=>{
     const chatDoc={
       id:chatId,
       type:isGroup?'group':'dm',
-      name:isGroup?grpName:(email.split('@')[0]||'Transmitter'),
+      name:isGroup?grpName:(email.split('@')[0]||'Subscriber'),
       members:[currentUser.uid, email],
       memberNames:{[currentUser.uid]:currentUser.displayName||'Me'},
-      memberColors:{[currentUser.uid]:getUserColor(currentUser.uid)},
       lastMessage:isGroup?'Circle founded':'Channel opened',
       lastSenderUid:currentUser.uid,
       lastMessageAt:serverTimestamp(),
@@ -1746,25 +1683,20 @@ function renderChatsList(){
   const container=$('#chatsContainer');
   if(!activeChats.length){
     container.innerHTML=`
-      <div class="empty">
-        <div style="font:400 12px var(--mono)">
-          [ NO TRANSMISSION CHANNELS ]<br>
-          <span style="color:var(--slate)">Initiate a private DM or group circle above</span>
-        </div>
+      <div class="empty" style="font:400 11px var(--mono)">
+        [ NO ACTIVE TRANSMISSIONS ]<br>
+        <span style="text-decoration:underline">Establish a direct channel or listening circle above</span>
       </div>
     `;
     return;
   }
 
   container.innerHTML=activeChats.map(c=>{
-    const isGroup=c.type==='group';
-    const monogram=isGroup?'GR':(c.name[0]||'S').toUpperCase();
     return `
-      <div class="chat-row" onclick="window.openChatFromList('${c.id}')">
-        <div class="user-avatar-mark" style="width:36px;height:36px;font-size:12px;background:${getUserColor(c.id)}">${monogram}</div>
+      <div class="chat-entry" onclick="window.openChatFromList('${c.id}')">
         <div class="t">
-          <b><span>${esc(c.name)}</span><small>${c.type==='group'?'[ CIRCLE ]':'[ DM ]'}</small></b>
-          <p>${esc(c.lastMessage||'No transmissions recorded')}</p>
+          <b><span>${esc(c.name)}</span><small>[ ${c.type==='group'?'CIRCLE':'DM'} ]</small></b>
+          <p>${esc(c.lastMessage||'No entries recorded')}</p>
         </div>
       </div>
     `;
@@ -1782,8 +1714,8 @@ function openChat(chatId,chat){
   $('#chatListView').style.display='none';
   $('#chatRoomView').style.display='flex';
   $('#activeChatTitle').textContent=chat.name||'Channel';
-  $('#activeChatSub').textContent=chat.type==='group'?'CIRCLE TRANSMISSION':'PRIVATE TRANSMISSION';
-  $('#activeChatAv').textContent=chat.type==='group'?'GR':(chat.name[0]||'S').toUpperCase();
+  $('#activeChatSub').textContent=chat.type==='group'?'CIRCLE FORUM':'DIRECT LINE';
+  $('#activeChatAv').textContent=(chat.name[0]||'S').toUpperCase();
   
   if(chatMsgsUnsub) chatMsgsUnsub();
   const msgsQ=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'),limit(60));
@@ -1797,26 +1729,26 @@ function openChat(chatId,chat){
 function renderMessages(msgs){
   const el=$('#chatMsgs');
   if(!msgs.length){
-    el.innerHTML='<div style="text-align:center;font:400 11px var(--mono);color:var(--slate);margin:auto">[ TRANSMISSION ESTABLISHED • DROP A RECORD ]</div>';
+    el.innerHTML='<div style="text-align:center;font:400 10px var(--mono);color:var(--ink-muted);margin:auto">[ TRANSMISSION ACTIVE • DISPATCH RECORD ]</div>';
     return;
   }
   el.innerHTML=msgs.map(m=>{
     const isMine=currentUser && m.senderUid===currentUser.uid;
     const trackH=m.track?`
-      <div class="msg-track-card">
-        <img src="${esc(m.track.art)}" style="width:34px;height:34px;border-radius:2px">
+      <div class="bubble-track">
+        <img src="${esc(m.track.art)}" style="width:30px;height:30px;border:1px solid currentColor">
         <div style="flex:1;min-width:0">
-          <b style="font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.track.name)}</b>
-          <small style="font:400 10px var(--mono);color:var(--paper-mute)">${esc(m.track.artist)}</small>
+          <b style="font-size:11px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.track.name)}</b>
+          <small style="font:400 9px var(--mono)">${esc(m.track.artist)}</small>
         </div>
-        <button class="ib" onclick="audio.src='${m.track.prev}';audio.play()" style="width:26px;height:26px">
-          <svg viewBox="0 0 24 24" width="12" height="12"><path d="M8 5v14l11-7z"/></svg>
+        <button class="ib" onclick="audio.src='${m.track.prev}';audio.play()" style="width:24px;height:24px">
+          <svg viewBox="0 0 24 24" width="10" height="10"><path d="M8 5v14l11-7z"/></svg>
         </button>
       </div>
     `:'';
     return `
-      <div class="msg-bubble ${isMine?'mine':'other'}">
-        ${!isMine?`<span class="sender-label">${esc(m.senderName)}</span>`:''}
+      <div class="bubble ${isMine?'mine':'other'}">
+        ${!isMine?`<span class="sender-meta">${esc(m.senderName)}</span>`:''}
         ${m.text?`<div>${esc(m.text)}</div>`:''}
         ${trackH}
       </div>
@@ -1832,7 +1764,7 @@ $('#btnBackToChats').onclick=()=>{
 };
 
 $('#btnChatAttachSong').onclick=()=>{
-  if(!S.liked.length) return toast('Preserve records in Discover first.');
+  if(!S.liked.length) return toast('Preserve records in Catalog first.');
   attachTarget='chat';
   openSongSelectModal();
 };
@@ -1849,8 +1781,7 @@ async function sendMessage(){
   const msgPayload={
     chatId:activeChatId,
     senderUid:currentUser.uid,
-    senderName:currentUser.displayName||'Archivist',
-    senderColor:getUserColor(currentUser.uid),
+    senderName:currentUser.displayName||'Subscriber',
     text:text,
     createdAt:serverTimestamp()
   };
@@ -1871,7 +1802,7 @@ async function sendMessage(){
   try{
     await addDoc(collection(db,'chats',activeChatId,'messages'),msgPayload);
     await updateDoc(doc(db,'chats',activeChatId),{
-      lastMessage:text||'Shared a master recording',
+      lastMessage:text||'Transmitted recording',
       lastSenderUid:currentUser.uid,
       lastMessageAt:serverTimestamp()
     });
@@ -1879,44 +1810,44 @@ async function sendMessage(){
 }
 
 /* ==============================================================
-   7. DOSSIER & PROFILE
+   7. SUBSCRIBER DOSSIER
    ============================================================== */
 function renderAccountPage(){
   if(!currentUser){
-    $('#profName').textContent='Anonymous Listener';
+    $('#profName').textContent='Anonymous Subscriber';
     $('#profHandle').textContent='[ UNREGISTERED ]';
-    $('#profBio').textContent='Sign in to synchronize private archive and author dispatches.';
+    $('#profBio').textContent='Sign in to synchronize private ledger and author reviews.';
     $('#settingsEmail').textContent='ANONYMOUS';
     return;
   }
-  const name=currentUser.displayName||currentUser.email.split('@')[0]||'Archivist';
+  const name=currentUser.displayName||currentUser.email.split('@')[0]||'Subscriber';
   const handle=S.userProfile?.handle||name.toLowerCase().replace(/\s+/g,'');
   
   $('#profName').textContent=name;
-  $('#profHandle').textContent=`[ @${handle} ]`;
-  $('#profBio').textContent=S.userProfile?.bio||'Dedicated sound collector and audio historian.';
+  $('#profHandle').textContent=`[ @${handle.toUpperCase()} ]`;
+  $('#profBio').textContent=S.userProfile?.bio||'Private sound ledger and acoustic archive on file.';
   $('#profAv').textContent=name.slice(0,2).toUpperCase();
-  $('#settingsEmail').textContent=currentUser.email||'AUTHENTICATED';
+  $('#settingsEmail').textContent=currentUser.email||'ACTIVE SUBSCRIBER';
 
   $('#profLoved').textContent=S.liked.length;
   $('#profPassed').textContent=S.noped.length;
   $('#profStreak').textContent=S.streak||1;
 
   const genres=topK(S.genre,6);
-  $('#profGenres').innerHTML=genres.length?genres.map(g=>`<span class="tag-btn" style="margin:0 4px 4px 0">${esc(g)}</span>`).join(''):'<p style="font:400 11px var(--mono);color:var(--slate)">Swipe records to formulate genre affinities.</p>';
+  $('#profGenres').innerHTML=genres.length?genres.map(g=>`<span class="btn-tag" style="margin:0 4px 4px 0">${esc(g)}</span>`).join(''):'<p style="font:400 11px var(--mono);color:var(--ink-secondary)">Evaluate catalog records to construct genre affinities.</p>';
 
   const myPosts=firestorePosts.filter(p=>p.uid===currentUser.uid);
   $('#profMyPosts').innerHTML=myPosts.length?myPosts.map(p=>`
     <div class="row">
       ${p.track?`<img src="${esc(p.track.art)}">`:''}
       <div class="t"><b>${esc(p.track?.name||'Dispatch')}</b><span>${esc(p.caption||p.track?.artist||'')}</span></div>
-      <button class="btn-ghost btn-danger" style="padding:4px 8px;font-size:10px" onclick="deleteMyPost('${p.id}')">DELETE</button>
+      <button class="btn-outline" style="padding:4px 8px;font-size:9px" onclick="deleteMyPost('${p.id}')">PURGE</button>
     </div>
-  `).join(''):'<p style="font:400 11px var(--mono);color:var(--slate)">No dispatches logged under this callsign.</p>';
+  `).join(''):'<p style="font:400 11px var(--mono);color:var(--ink-secondary)">No review entries logged under this subscriber ID.</p>';
 }
 
 window.deleteMyPost=async(postId)=>{
-  if(!confirm('Purge this record from public journal?')) return;
+  if(!confirm('Purge this record review from public journal?')) return;
   try{
     const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     await deleteDoc(doc(db,'posts',postId));
@@ -1925,7 +1856,7 @@ window.deleteMyPost=async(postId)=>{
 };
 
 $('#btnEditProfile').onclick=()=>{
-  if(!currentUser){openAuthModal('Sign in to configure profile');return}
+  if(!currentUser){openAuthModal('Sign in to configure dossier');return}
   $('#editName').value=currentUser.displayName||'';
   $('#editHandle').value=S.userProfile?.handle||'';
   $('#editBio').value=S.userProfile?.bio||'';
@@ -1957,32 +1888,30 @@ $('#btnOpenAuraFromProf').onclick=()=>{
 };
 
 /* ==============================================================
-   8. SYSTEM SETTINGS
+   8. SPECIFICATION (SETTINGS)
    ============================================================== */
 function renderSettingsPage(){
   $('#togScratch').classList.toggle('on',!!S.settings.scratch);
   $('#togTapeStop').classList.toggle('on',!!S.settings.tapeStop);
   $('#togAutoplay').classList.toggle('on',!!S.settings.autoplay);
-  $('#togReactive').classList.toggle('on',!!S.settings.reactive);
   $('#selTheme').value=S.settings.theme||'default';
-  $('#settingsEmail').textContent=currentUser?currentUser.email:'ANONYMOUS SESSION';
-  $('#btnSettingsAuth').textContent=currentUser?'SWITCH':'LOG IN';
+  $('#settingsEmail').textContent=currentUser?currentUser.email:'ANONYMOUS';
+  $('#btnSettingsAuth').textContent=currentUser?'CHANGE':'LOG IN';
 }
 
 $('#togScratch').onclick=()=>{S.settings.scratch=!S.settings.scratch;$('#togScratch').classList.toggle('on');saveLocal()};
 $('#togTapeStop').onclick=()=>{S.settings.tapeStop=!S.settings.tapeStop;$('#togTapeStop').classList.toggle('on');saveLocal()};
 $('#togAutoplay').onclick=()=>{S.settings.autoplay=!S.settings.autoplay;$('#togAutoplay').classList.toggle('on');saveLocal()};
-$('#togReactive').onclick=()=>{S.settings.reactive=!S.settings.reactive;$('#togReactive').classList.toggle('on');saveLocal()};
 
 $('#selTheme').onchange=e=>{
   const val=e.target.value;
   S.settings.theme=val;saveLocal();
-  document.body.className=val==='midnight'?'theme-midnight':val==='cyber'?'theme-cyber':'';
+  document.body.className=val==='inverted'?'theme-inverted':'';
   toast('CONTRAST: '+val.toUpperCase());
 };
 
 $('#btnClearCache').onclick=()=>{
-  if(!confirm('Purge seen track index? Preserved records remain safe.')) return;
+  if(!confirm('Purge seen track registry? Preserved records remain safe.')) return;
   S.seen=[];S.noped=[];saveLocal();toast('CACHE PURGED');
 };
 
@@ -1993,7 +1922,7 @@ $('#btnSignOutFull').onclick=async()=>{
 $('#btnSettingsAuth').onclick=()=>openAuthModal();
 
 /* ==============================================================
-   9. SPINDLE BLEND (MULTIPLAYER ROOMS)
+   9. SPINDLE BLEND (COLLABORATIVE EVALUATION)
    ============================================================== */
 let activeRoomId=null,roomListener=null,blendDeck=[];
 function renderBlendView(){
@@ -2024,7 +1953,7 @@ $('#btnCreateRoom').onclick=async()=>{
     });
     activeRoomId=code;
     startBlendSession(code,true);
-  }catch(err){toast('ROOM FAILURE')}
+  }catch(err){toast('SESSION ERROR')}
 };
 
 $('#btnJoinRoom').onclick=async()=>{
@@ -2034,7 +1963,7 @@ $('#btnJoinRoom').onclick=async()=>{
   try{
     const roomRef=doc(db,'rooms',code);
     const snap=await getDoc(roomRef);
-    if(!snap.exists()) return toast('INVALID CODE');
+    if(!snap.exists()) return toast('INVALID PASS-CODE');
     await updateDoc(roomRef,{
       guestUid:currentUser.uid,
       guestName:currentUser.displayName||'Guest',
@@ -2043,7 +1972,7 @@ $('#btnJoinRoom').onclick=async()=>{
     });
     activeRoomId=code;
     startBlendSession(code,false);
-  }catch(err){toast('JOIN FAILURE')}
+  }catch(err){toast('CONNECTION FAILED')}
 };
 
 function startBlendSession(code,isHost){
@@ -2059,11 +1988,11 @@ function startBlendSession(code,isHost){
 
     if(room.status==='waiting'){
       container.innerHTML=`
-        <div class="settings-section" style="text-align:center;padding:30px 20px">
-          <p class="sub">[ SESSION PASS-CODE GENERATED ]</p>
-          <div style="font:700 42px var(--mono);color:var(--gold);letter-spacing:0.18em;margin:12px 0">${room.id}</div>
-          <button class="btn-ghost" onclick="navigator.clipboard?.writeText('${room.id}');toast('PASS-CODE COPIED')">COPY PASS-CODE</button>
-          <p style="margin-top:24px;font:400 11px var(--mono);color:var(--slate)">AWAITING COLLABORATOR CONNECTION…</p>
+        <div class="settings-box" style="text-align:center;padding:26px 16px">
+          <p class="sub">[ COLLABORATIVE PASS-CODE READY ]</p>
+          <div style="font:700 40px var(--mono);letter-spacing:0.18em;margin:12px 0">${room.id}</div>
+          <button class="btn-outline" onclick="navigator.clipboard?.writeText('${room.id}');toast('PASS-CODE COPIED')">COPY PASS-CODE</button>
+          <p style="margin-top:20px;font:400 11px var(--mono);color:var(--ink-secondary)">AWAITING COLLABORATOR CONNECTION…</p>
         </div>
       `;
     } else if(room.status==='playing' || room.status==='ready'){
@@ -2080,24 +2009,24 @@ function startBlendSession(code,isHost){
       if(myCount<blendDeck.length){
         const cur=blendDeck[myCount];
         container.innerHTML=`
-          <div class="settings-section" style="margin-top:10px">
-            <div style="display:flex;justify-content:space-between;font:700 10px var(--mono);color:var(--slate);margin-bottom:12px">
-              <span>YOUR EVALUATIONS: ${myCount}/${blendDeck.length}</span>
+          <div class="settings-box">
+            <div style="display:flex;justify-content:space-between;font:700 9px var(--mono);color:var(--ink-secondary);margin-bottom:12px">
+              <span>YOUR SELECTIONS: ${myCount}/${blendDeck.length}</span>
               <span>COLLABORATOR: ${otherCount}/${blendDeck.length}</span>
             </div>
-            <div class="row" style="margin:14px 0">
-              <img src="${esc(cur.art)}" style="width:64px;height:64px;border-radius:4px">
+            <div class="row" style="margin:12px 0">
+              <img src="${esc(cur.art)}" style="width:60px;height:60px">
               <div class="t">
-                <b style="font-size:16px">${esc(cur.name)}</b>
+                <b style="font-size:15px">${esc(cur.name)}</b>
                 <span>${esc(cur.artist)} • ${esc(cur.genre)}</span>
               </div>
               <button class="ib" onclick="audio.src='${cur.prev}';audio.play()">
                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </button>
             </div>
-            <div style="display:flex;justify-content:center;gap:12px;margin-top:16px">
-              <button class="btn-ghost" style="flex:1" id="btnBlendPass">DISMISS</button>
-              <button class="btn-primary" style="flex:1" id="btnBlendLove">PRESERVE</button>
+            <div style="display:flex;justify-content:center;gap:10px;margin-top:14px">
+              <button class="btn-outline" style="flex:1" id="btnBlendPass">DISMISS</button>
+              <button class="btn-solid" style="flex:1" id="btnBlendLove">PRESERVE</button>
             </div>
           </div>
         `;
@@ -2105,7 +2034,7 @@ function startBlendSession(code,isHost){
         $('#btnBlendLove').onclick=()=>recordBlendSwipe(code,cur.id,true,isHost);
       } else {
         container.innerHTML=`
-          <div class="settings-section" style="text-align:center;padding:30px 20px">
+          <div class="settings-box" style="text-align:center;padding:26px 16px">
             <h3 style="font:400 24px var(--serif)">Evaluation Recorded</h3>
             <p class="sub">Awaiting collaborator to conclude selections (${otherCount}/${blendDeck.length})…</p>
           </div>
@@ -2132,18 +2061,18 @@ function renderBlendMatch(room){
 
   const container=$('#blendActive');
   container.innerHTML=`
-    <div class="settings-section" style="text-align:center;padding:26px 16px">
-      <span style="font:700 10px var(--mono);color:var(--slate);letter-spacing:0.12em">[ HARMONIC CONGRUENCE ]</span>
-      <div style="font:700 64px var(--mono);color:var(--patina);line-height:1;margin:12px 0">${matchPct}%</div>
-      <p class="sub">${mutuals.length} mutual recordings preserved by both archivists.</p>
+    <div class="settings-box" style="text-align:center;padding:24px 16px">
+      <span style="font:700 9px var(--mono);color:var(--ink-secondary);letter-spacing:0.12em">[ HARMONIC CONGRUENCE ]</span>
+      <div style="font:700 60px var(--mono);line-height:1;margin:12px 0">${matchPct}%</div>
+      <p class="sub">${mutuals.length} mutual recordings preserved by both listeners.</p>
 
-      <div style="margin:20px 0;text-align:left">
-        ${mutuals.length?mutuals.map(t=>rowH(t)).join(''):'<p style="text-align:center;font:400 11px var(--mono);color:var(--slate)">No intersecting selections recorded.</p>'}
+      <div style="margin:16px 0;text-align:left">
+        ${mutuals.length?mutuals.map(t=>rowH(t)).join(''):'<p style="text-align:center;font:400 11px var(--mono);color:var(--ink-secondary)">No intersecting selections recorded.</p>'}
       </div>
 
-      <div style="display:flex;justify-content:center;gap:10px">
-        ${mutuals.length?`<button class="btn-primary" id="btnSaveBlend">PRESERVE ALL TO ARCHIVE</button>`:''}
-        <button class="btn-ghost" onclick="activeRoomId=null;renderBlendView()">CONCLUDE</button>
+      <div style="display:flex;justify-content:center;gap:8px">
+        ${mutuals.length?`<button class="btn-solid" id="btnSaveBlend">PRESERVE TO LEDGER</button>`:''}
+        <button class="btn-outline" onclick="activeRoomId=null;renderBlendView()">CONCLUDE</button>
       </div>
     </div>
   `;
@@ -2151,64 +2080,64 @@ function renderBlendMatch(room){
     $('#btnSaveBlend').onclick=()=>{
       mutuals.forEach(t=>{if(!S.liked.some(x=>x.id===t.id)) S.liked.unshift(t)});
       syncUserToFirestore();stats();
-      toast('MUTUAL RECORDINGS ARCHIVED');
+      toast('MUTUAL RECORDINGS PRESERVED');
     };
   }
 }
 
 /* ==============================================================
-   10. SOUND AURA CANVAS (MINIMALIST CHROMATIC ART)
+   10. SOUND AURA LITHOGRAPH
    ============================================================== */
 function generateSoundAura(){
   const canvas=$('#auraCanvas');
   const ctx=canvas.getContext('2d');
   const w=canvas.width,h=canvas.height;
 
-  ctx.fillStyle='#09080d';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#fbf9f4';ctx.fillRect(0,0,w,h);
+
+  // Concentric engraving circles
+  ctx.strokeStyle='#141312';ctx.lineWidth=1;
+  for(let r=30;r<240;r+=14){
+    ctx.beginPath();ctx.arc(w/2,h*0.4,r,0,Math.PI*2);ctx.stroke();
+  }
+
+  // Crosshair
+  ctx.beginPath();ctx.moveTo(w/2-250,h*0.4);ctx.lineTo(w/2+250,h*0.4);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(w/2,h*0.4-250);ctx.lineTo(w/2,h*0.4+250);ctx.stroke();
 
   const topG=topK(S.genre,3);
-  const color1=topG[0]?.includes('Rock')?'#d9a84e':topG[0]?.includes('Pop')?'#e84534':'#8b7cf6';
-  const color2=topG[1]?.includes('Hip')?'#f97316':'#4ecdc4';
+  let archetype='THE ANALOG ARCHIVIST';
+  if(topG[0]?.includes('Rock')) archetype='THE ACOUSTIC PURIST';
+  if(topG[0]?.includes('Pop')) archetype='THE MELODIC COLLECTOR';
+  if(topG[0]?.includes('Jazz')) archetype='THE MODAL RESEARCHER';
 
-  const grad=ctx.createRadialGradient(w/2,h*0.42,10,w/2,h*0.42,w*0.52);
-  grad.addColorStop(0,color1);grad.addColorStop(0.55,color2);grad.addColorStop(1,'transparent');
-  ctx.fillStyle=grad;ctx.beginPath();ctx.arc(w/2,h*0.42,w*0.52,0,Math.PI*2);ctx.fill();
-
-  ctx.strokeStyle='rgba(244,239,230,0.06)';ctx.lineWidth=1.5;
-  for(let r=30;r<240;r+=16){ctx.beginPath();ctx.arc(w/2,h*0.42,r,0,Math.PI*2);ctx.stroke()}
-
-  let archetype='THE ANALOG REVERIE';
-  if(topG[0]?.includes('Rock')) archetype='THE OVERTONE NOMAD';
-  if(topG[0]?.includes('Pop')) archetype='THE CHROMATIC DREAMER';
-  if(topG[0]?.includes('Jazz')) archetype='THE MODAL ARCHIVIST';
-
-  ctx.fillStyle='#f5efe6';
-  ctx.font='400 36px "Instrument Serif", serif';
+  ctx.fillStyle='#141312';
+  ctx.font='700 32px "Newsreader", serif';
   ctx.textAlign='center';
   ctx.fillText(archetype,w/2,h*0.75);
 
-  ctx.fillStyle='#9992a4';
-  ctx.font='400 13px "Space Mono", monospace';
-  ctx.fillText(topG.length?topG.join(' • ').toUpperCase():'ECLECTIC SPECTRUM',w/2,h*0.81);
+  ctx.fillStyle='#5e5a54';
+  ctx.font='400 12px "Space Mono", monospace';
+  ctx.fillText(topG.length?topG.join(' • ').toUpperCase():'ALL SPECTRUMS',w/2,h*0.81);
 
-  ctx.fillStyle='#d9a84e';
-  ctx.font='700 10px "Space Mono", monospace';
-  ctx.fillText('SPINDLE SOUND ARCHIVE • MANIFEST SPECIFICATION',w/2,h*0.92);
+  ctx.fillStyle='#141312';
+  ctx.font='700 9px "Space Mono", monospace';
+  ctx.fillText('SPINDLE SOUND ARCHIVE • RECORD NUMBER #SP-2026',w/2,h*0.92);
 }
 
 $('#btnDownloadAura').onclick=()=>{
-  const a=document.createElement('a');a.download='spindle-aura.png';a.href=$('#auraCanvas').toDataURL();a.click();
+  const a=document.createElement('a');a.download='spindle-lithograph.png';a.href=$('#auraCanvas').toDataURL();a.click();
 };
 $('#btnShareAura').onclick=()=>{
   if(navigator.share){
-    $('#auraCanvas').toBlob(blob=>{navigator.share({files:[new File([blob],'sound-aura.png',{type:'image/png'})],title:'Spindle Sound Aura'}).catch(()=>{})});
+    $('#auraCanvas').toBlob(blob=>{navigator.share({files:[new File([blob],'sound-lithograph.png',{type:'image/png'})],title:'Spindle Sound Lithograph'}).catch(()=>{})});
   } else {
     $('#btnDownloadAura').click();
   }
 };
 
 /* ==============================================================
-   11. 2D VIBE OSCILLOGRAPH
+   11. 2D COORDINATE SCOPE
    ============================================================== */
 $('#btnOpenRadar').onclick=()=>$('#vibeModal').classList.add('on');
 const vibePad=$('#vibePad'),vibePuck=$('#vibePuck');
@@ -2234,22 +2163,22 @@ $('#btnApplyVibe').onclick=()=>{
 };
 
 /* ==============================================================
-   12. EXPORT ARCHIVE
+   12. EXPORT LEDGER
    ============================================================== */
 $('#btnOpenExport').onclick=()=>$('#exportModal').classList.add('on');
 $('#btnExportSpotify').onclick=()=>{
-  if(!S.liked.length) return toast('ARCHIVE EMPTY');
+  if(!S.liked.length) return toast('LEDGER EMPTY');
   window.open(`https://open.spotify.com/search/${encodeURIComponent(S.liked[0].name+' '+S.liked[0].artist)}`,'_blank');
 };
 $('#btnDownloadCSV').onclick=()=>{
-  if(!S.liked.length) return toast('ARCHIVE EMPTY');
+  if(!S.liked.length) return toast('LEDGER EMPTY');
   let csv="Title,Artist,Genre,Year\n";
   S.liked.forEach(t=>{csv+=`"${t.name.replace(/"/g,'""')}","${t.artist.replace(/"/g,'""')}","${t.genre||''}","${t.year||''}"\n`});
-  const a=document.createElement('a');a.download='spindle-archive.csv';a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.click();
-  toast('MANIFEST DOWNLOADED');
+  const a=document.createElement('a');a.download='spindle-ledger.csv';a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.click();
+  toast('LEDGER CSV DOWNLOADED');
 };
 $('#btnCopyTracklist').onclick=()=>{
-  if(!S.liked.length) return toast('ARCHIVE EMPTY');
+  if(!S.liked.length) return toast('LEDGER EMPTY');
   navigator.clipboard?.writeText(S.liked.map(t=>`${t.name} - ${t.artist}`).join('\n'));
   toast('MANIFEST COPIED');
 };
@@ -2262,17 +2191,17 @@ $('#btnStartDaily').onclick=async()=>{
   $('#dailyModal').classList.remove('on');isBlindMode=true;deck=[];
   toast('BLIND ACOUSTIC RUN ACTIVE');
   try{
-    const r=(await Promise.all(['rare groove jazz','indie vinyl master','synth archive'].map(q=>search(q,5)))).flat().sort(()=>Math.random()-.5).slice(0,10);
+    const r=(await Promise.all(['jazz classic vinyl','folk acoustic master','electronic rare'].map(q=>search(q,5)))).flat().sort(()=>Math.random()-.5).slice(0,10);
     deck=r;renderDeck();
   }catch(e){refill()}
 };
 
 /* ==============================================================
-   14. LIBRARY & AUTH HEADER
+   14. LEDGER & AUTH HEADER
    ============================================================== */
 function renderLib(){
   reg(S.liked);
-  $('#lib').innerHTML=S.liked.length?S.liked.map(t=>rowH(t,`<button class="ib" data-share="${t.id}" aria-label="Share">↗</button>`)).join(''):'<div class="empty"><div style="font:400 12px var(--mono)">[ NO PRESERVED RECORDINGS ]<br><span style="color:var(--slate)">Swipe right on Discover to archive recordings</span></div></div>';
+  $('#lib').innerHTML=S.liked.length?S.liked.map(t=>rowH(t,`<button class="ib" data-share="${t.id}" aria-label="Share">↗</button>`)).join(''):'<div class="empty" style="font:400 11px var(--mono)">[ LEDGER EMPTY ]<br><span style="text-decoration:underline">Preserve master recordings in Catalog first</span></div>';
 }
 
 document.addEventListener('click',e=>{
@@ -2281,7 +2210,7 @@ document.addEventListener('click',e=>{
     const track=byId[s.dataset.share];
     if(track){
       composerTrack=track;
-      $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-ghost" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'" style="padding:4px 8px;font-size:10px">✕</button>`);
+      $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-outline" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'" style="padding:2px 6px;font-size:9px">✕</button>`);
       $('#composerAttachedTrack').style.display='block';
       switchView('feed');
       $('#composerText').focus();
@@ -2293,14 +2222,13 @@ let isSignupMode=false;
 function renderUserHeader(){
   const slot=$('#authSlot');
   if(!currentUser){
-    slot.innerHTML=`<button class="tag-btn" id="btnShowAuth" style="color:var(--paper)">LOG IN</button>`;
+    slot.innerHTML=`<button class="btn-tag" id="btnShowAuth">[ LOG IN ]</button>`;
     $('#btnShowAuth').onclick=()=>openAuthModal();
   } else {
     const name=currentUser.displayName||currentUser.email.split('@')[0]||'User';
     slot.innerHTML=`
-      <div class="user-badge-btn" id="btnHeaderProfile">
-        <div class="user-avatar-mark">${name.slice(0,2).toUpperCase()}</div>
-        <span style="font:600 11px var(--mono)">${esc(name.toUpperCase())}</span>
+      <div class="user-tag" id="btnHeaderProfile">
+        <span>[ @${esc(name.toUpperCase())} ]</span>
       </div>
     `;
     $('#btnHeaderProfile').onclick=()=>switchView('account');
@@ -2316,7 +2244,7 @@ function openAuthModal(msg=''){
 
 $('#tabLogin').onclick=()=>{
   isSignupMode=false;$('#tabLogin').classList.add('active');$('#tabSignup').classList.remove('active');
-  $('#nameGrp').style.display='none';$('#authTitle').textContent='Archivist Access';$('#authSubmitBtn').textContent='AUTHORIZE';
+  $('#nameGrp').style.display='none';$('#authTitle').textContent='Subscriber Access';$('#authSubmitBtn').textContent='AUTHORIZE';
 };
 $('#tabSignup').onclick=()=>{
   isSignupMode=true;$('#tabSignup').classList.add('active');$('#tabLogin').classList.remove('active');
@@ -2334,7 +2262,7 @@ $('#authForm').onsubmit=async e=>{
     if(isSignupMode){
       const cred=await createUserWithEmailAndPassword(auth,email,password);
       if(name) await updateProfile(cred.user,{displayName:name});
-      toast('WELCOME, '+(name||'ARCHIVIST').toUpperCase());
+      toast('WELCOME, '+(name||'SUBSCRIBER').toUpperCase());
     } else {
       await signInWithEmailAndPassword(auth,email,password);
       toast('ACCESS AUTHORIZED');
@@ -2388,8 +2316,7 @@ onAuthStateChanged(auth,async user=>{
   }
 });
 
-if(S.settings.theme==='midnight') document.body.className='theme-midnight';
-else if(S.settings.theme==='cyber') document.body.className='theme-cyber';
+if(S.settings.theme==='inverted') document.body.className='theme-inverted';
 
 stats();
 refill();
