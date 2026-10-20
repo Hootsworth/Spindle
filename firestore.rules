@@ -35,6 +35,19 @@ rules_version = '2';
 //   - likedBy: list (required, max 10000 items) - List of user UIDs who liked the post
 //   - createdAt: timestamp (required, immutable) - Timestamp when post was created
 //
+// Collection: rooms
+// Document ID: {roomId} (4-6 char room code or ID)
+// Fields:
+//   - id: string (required, immutable, 1-64 chars) - Room identifier
+//   - hostUid: string (required, immutable, 1-128 chars) - Firebase Auth UID of room host
+//   - guestUid: string (optional, 1-128 chars) - Firebase Auth UID of joined guest
+//   - deck: list (optional, max 100 items) - Array of track metadata maps
+//   - hostSwipes: map (optional, max 100 keys) - Map of trackId -> bool for host swipe decisions
+//   - guestSwipes: map (optional, max 100 keys) - Map of trackId -> bool for guest swipe decisions
+//   - status: string (required, 'waiting' | 'playing' | 'done') - Blend session status
+//   - createdAt: timestamp (required, immutable) - Room creation timestamp
+//   - updatedAt: timestamp (required) - Last activity timestamp
+//
 // ===============================================================
 
 service cloud.firestore {
@@ -136,6 +149,21 @@ service cloud.firestore {
         );
     }
 
+    // Validate multiplayer Blend room document schema and bounds (used for both create and update)
+    function isValidRoom(data) {
+      return data.keys().hasAll(['id', 'hostUid', 'status', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['id', 'hostUid', 'guestUid', 'deck', 'hostSwipes', 'guestSwipes', 'status', 'createdAt', 'updatedAt']) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 64 &&
+        data.hostUid is string && data.hostUid.size() > 0 && data.hostUid.size() <= 128 &&
+        (!('guestUid' in data) || data.guestUid == null || (data.guestUid is string && data.guestUid.size() > 0 && data.guestUid.size() <= 128)) &&
+        (!('deck' in data) || (data.deck is list && data.deck.size() <= 100)) &&
+        (!('hostSwipes' in data) || (data.hostSwipes is map && data.hostSwipes.size() <= 100)) &&
+        (!('guestSwipes' in data) || (data.guestSwipes is map && data.guestSwipes.size() <= 100)) &&
+        data.status in ['waiting', 'playing', 'done'] &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
     // ===============================================================
     // Collection Rules
     // ===============================================================
@@ -192,6 +220,33 @@ service cloud.firestore {
 
       // Only the post author can delete their post
       allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    // 3. Rooms collection
+    // Holds multiplayer Blend rooms for real-time collaborative track matching
+    match /rooms/{roomId} {
+      // Readable by anyone (or authenticated users) so players can join by 4-6 char room ID
+      allow read: if true;
+
+      // Authenticated users can create a room with themselves as hostUid
+      allow create: if isAuthenticated() &&
+                       request.resource.data.hostUid == request.auth.uid &&
+                       isValidRoom(request.resource.data);
+
+      // Updates allowed for host, or guest joining / playing
+      allow update: if isAuthenticated() &&
+                       isValidRoom(request.resource.data) &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.hostUid == resource.data.hostUid &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       (
+                         resource.data.hostUid == request.auth.uid ||
+                         request.resource.data.guestUid == request.auth.uid ||
+                         (resource.data.guestUid == request.auth.uid)
+                       );
+
+      // Only the host can delete the room
+      allow delete: if isAuthenticated() && resource.data.hostUid == request.auth.uid;
     }
   }
 }
