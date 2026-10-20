@@ -7,20 +7,22 @@
 <style>
 :root{
   --ink:#1a0f2e;--ink2:#26183f;--ink3:#140a24;--paper:#f7eee4;--mute:#b9a9cf;--pink:#ff5c8a;
-  --sun:#ffc857;--mint:#5ce1c6;--violet:#b79cff;--coral:#ff8a5c;
+  --sun:#ffc857;--mint:#5ce1c6;--violet:#b79cff;--coral:#ff8a5c;--emerald:#4ade80;
   --d:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;--b:'DM Sans',system-ui,sans-serif
 }
+body.theme-midnight{--ink:#09060f;--ink2:#140c21;--ink3:#050308}
+body.theme-cyber{--ink:#080e1a;--ink2:#101a2e;--ink3:#04070d;--sun:#00f2fe;--pink:#ff007f;--mint:#4facfe}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{background:var(--ink);color:var(--paper);font:400 15px/1.45 var(--b);overflow:hidden}
+body{background:var(--ink);color:var(--paper);font:400 15px/1.45 var(--b);overflow:hidden;transition:background .3s}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 #bg{position:fixed;inset:-10%;background:center/cover;filter:blur(70px) saturate(1.4);opacity:.45;transition:background-image .6s,opacity .6s,transform .15s ease-out;z-index:0;transform-origin:center center}
 #grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.12;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 #app{position:relative;z-index:2;height:100dvh;display:flex;flex-direction:column}
 
 /* Header */
-header{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 10px) 18px 6px;gap:8px}
+header{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 8px) 16px 6px;gap:8px}
 .logo{font:800 26px var(--d);letter-spacing:-.04em;display:flex;align-items:center;gap:8px;flex:none}
 .logo i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,var(--ink) 0 14%,var(--pink) 15% 38%,var(--ink) 39% 44%,var(--sun) 45%);animation:spin 6s linear infinite}
 .logo.paused i{animation-play-state:paused}
@@ -29,33 +31,32 @@ header{display:flex;align-items:center;justify-content:space-between;padding:cal
 .hdr-actions{display:flex;align-items:center;gap:6px;overflow-x:auto;padding-bottom:2px}
 .pill{font:600 12px var(--b);padding:5px 11px;border-radius:99px;background:#ffffff14;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;transition:background .2s,transform .15s}
 .pill:hover{background:#ffffff22}
-.pill.active{background:var(--sun);color:var(--ink)}
 .pill.daily-btn{background:linear-gradient(135deg,#ff5c8a33,#ffc85733);border:1px solid #ffc85744;color:var(--sun)}
-.user-chip{display:flex;align-items:center;gap:7px;padding:3px 9px 3px 4px;border-radius:99px;background:#ffffff14;font-size:12px}
+.user-chip{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 3px;border-radius:99px;background:#ffffff14;font-size:12px;cursor:pointer}
+.user-chip:hover{background:#ffffff22}
 .user-chip .av{width:24px;height:24px;font-size:11px}
-.user-chip .uname{max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
-.btn-icon{display:grid;place-items:center;padding:4px;border-radius:50%;color:var(--mute);transition:color .2s}
-.btn-icon:hover{color:var(--pink)}
+.user-chip .uname{max-width:75px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
 .auth-btn{background:var(--pink);color:var(--ink);font-weight:700;border:0}
 .auth-btn:hover{filter:brightness(1.1);transform:scale(1.02)}
 
 /* Subheader / Time Machine Bar */
-.era-bar{display:flex;gap:6px;padding:4px 18px 8px;overflow-x:auto;scrollbar-width:none}
+.era-bar{display:flex;gap:6px;padding:4px 16px 8px;overflow-x:auto;scrollbar-width:none}
 .era-bar::-webkit-scrollbar{display:none}
 .era-chip{font:600 12px var(--b);padding:4px 12px;border-radius:99px;background:#ffffff0d;color:var(--mute);white-space:nowrap;transition:all .2s;border:1px solid transparent}
 .era-chip.on{background:#ffffff22;color:var(--sun);border-color:#ffc85744}
 
-/* Views */
+/* Views Container */
 main{flex:1;min-height:0;position:relative}
-.view{position:absolute;inset:0;display:none;overflow-y:auto;padding:8px 18px 110px}
+.view{position:absolute;inset:0;display:none;overflow-y:auto;padding:8px 16px 110px}
 .view.on{display:block}
 #v-discover.on{display:flex;flex-direction:column;align-items:center;overflow:hidden;padding-bottom:96px}
 
-/* Navigation */
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 6px calc(env(safe-area-inset-bottom) + 8px);background:#1a0f2efa;backdrop-filter:blur(16px);border-top:1px solid #ffffff14;z-index:5}
-nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:14px;font-size:11px;color:var(--mute);transition:color .2s}
+/* Bottom Navigation */
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 4px calc(env(safe-area-inset-bottom) + 8px);background:#1a0f2efa;backdrop-filter:blur(16px);border-top:1px solid #ffffff14;z-index:10}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border-radius:14px;font-size:11px;color:var(--mute);transition:color .2s;position:relative}
 nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--sun)}
+.nav-badge{position:absolute;top:4px;right:14px;width:7px;height:7px;border-radius:50%;background:var(--pink)}
 
 /* Deck */
 #deckWrap{position:relative;flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
@@ -94,72 +95,99 @@ background:repeating-radial-gradient(circle,#0c0616 0 2px,#1d1230 3px 4px);box-s
 .roast-chip{font:600 12px var(--b);padding:4px 10px;border-radius:99px;background:#ffffff14;color:var(--paper);transition:background .2s}
 .roast-chip:hover{background:var(--pink);color:var(--ink)}
 
-/* Lists & Common Cards */
-h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
-.sub{color:var(--mute);margin-bottom:18px}
+/* Common Cards & Row */
+h1{font:800 28px/1.1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
+.sub{color:var(--mute);margin-bottom:16px;font-size:14px}
 .wrap{max-width:580px;margin:0 auto}
 .row{display:flex;gap:12px;align-items:center;padding:10px;border-radius:16px;background:#ffffff0d;margin-bottom:8px}
 .row img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex:none}
 .row .t{flex:1;min-width:0}.row b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row span{color:var(--mute);font-size:13px}
 .ib{width:38px;height:38px;border-radius:50%;background:#ffffff14;display:grid;place-items:center;flex:none}
 .ib.on{background:var(--pink);color:var(--ink)}
-.post{background:#ffffff0d;border-radius:22px;padding:14px;margin-bottom:14px}
+
+/* Feed Card & Composer */
+.feed-composer{background:#ffffff0d;border-radius:20px;padding:16px;margin-bottom:18px;border:1px solid #ffffff1a}
+.feed-composer textarea{width:100%;background:none;border:0;color:var(--paper);font:inherit;resize:none;min-height:55px;outline:none}
+.composer-ftr{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid #ffffff14;margin-top:8px}
+.post{background:#ffffff0d;border-radius:22px;padding:16px;margin-bottom:16px;border:1px solid #ffffff14}
 .ph{display:flex;gap:10px;align-items:center;margin-bottom:10px}
 .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:800 15px var(--d);color:var(--ink);flex:none}
 .ph small{color:var(--mute);display:block;font-size:12px}
-.match{margin-left:auto;font:700 12px var(--b);color:var(--ink);background:var(--mint);padding:3px 9px;border-radius:99px}
 .post p{margin-bottom:10px;text-wrap:pretty}
-.post .row{background:#00000033;margin:0 0 8px}
+.post .row{background:#00000033;margin:0 0 10px}
 .pf{display:flex;gap:16px;color:var(--mute);font-size:13px;padding:2px 4px}
 .pf button{display:flex;gap:6px;align-items:center;color:inherit;cursor:pointer}.pf button.on{color:var(--pink)}
-.bars>div{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.bars label{width:110px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bars i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--pink),var(--sun));min-width:8px;transition:width .5s}
-.stats{display:flex;gap:10px;margin:14px 0}.stats div{flex:1;background:#ffffff0d;border-radius:18px;padding:12px}.stats b{font:800 26px var(--d);display:block}.stats span{color:var(--mute);font-size:12px}
-.tag{display:inline-block;margin:0 6px 6px 0;padding:5px 12px;border-radius:99px;background:#ffffff14;font-size:13px}
+.comments-sec{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14;display:none}
+.comments-sec.on{display:block}
+.comment-item{display:flex;gap:8px;font-size:13px;margin-bottom:8px}
+.comment-input-row{display:flex;gap:8px;margin-top:10px}
+.comment-input-row input{flex:1;padding:8px 12px;border-radius:99px;background:#00000033;border:1px solid #ffffff22;color:#fff;font:inherit;font-size:13px}
 
-/* Feature Cards & Hero Banners */
-.hero-card{background:linear-gradient(135deg,#ff5c8a22,#ffc85722);border:1px solid #ffffff1f;border-radius:24px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden}
-.hero-card h3{font:800 20px var(--d);margin-bottom:4px}
-.hero-card p{color:var(--mute);font-size:13px;margin-bottom:14px}
-.btn{background:var(--pink);color:var(--ink);font:700 14px var(--b);padding:10px 20px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn.sec{background:#ffffff1a;color:var(--paper)}
-.btn:hover{filter:brightness(1.08)}
-.btn-group{display:flex;gap:10px;flex-wrap:wrap}
+/* Messages & Groups */
+.chat-item{display:flex;gap:12px;align-items:center;padding:12px;border-radius:18px;background:#ffffff0d;margin-bottom:8px;cursor:pointer;transition:background .2s}
+.chat-item:hover{background:#ffffff18}
+.chat-item .t{flex:1;min-width:0}
+.chat-item b{display:flex;align-items:center;justify-content:space-between;font-size:15px}
+.chat-item small{color:var(--mute);font-size:11px}
+.chat-item p{color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.chat-box{display:flex;flex-direction:column;height:calc(100dvh - 130px)}
+.chat-msgs{flex:1;overflow-y:auto;padding:10px 4px;display:flex;flex-direction:column;gap:10px}
+.msg-bubble{max-width:82%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.4}
+.msg-bubble.mine{align-self:flex-end;background:linear-gradient(135deg,var(--pink),#d946ef);color:var(--ink);border-bottom-right-radius:4px}
+.msg-bubble.other{align-self:flex-start;background:var(--ink2);border:1px solid #ffffff1a;border-bottom-left-radius:4px}
+.msg-bubble .sender-name{font-size:11px;font-weight:700;margin-bottom:2px;display:block}
+.msg-bubble .msg-track{margin-top:6px;padding:6px;border-radius:10px;background:#00000033;display:flex;align-items:center;gap:8px}
+.chat-input-bar{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #ffffff14}
+.chat-input-bar input{flex:1;padding:12px 16px;border-radius:99px;background:var(--ink2);border:1px solid #ffffff26;color:var(--paper);font:inherit}
+
+/* Account Page */
+.profile-card{text-align:center;background:#ffffff0d;border-radius:24px;padding:24px;margin-bottom:18px;position:relative}
+.profile-av{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font:800 32px var(--d);color:var(--ink);box-shadow:0 10px 25px #0006}
+.profile-bio{color:var(--mute);font-size:14px;margin:8px 0 16px;max-width:380px;margin-left:auto;margin-right:auto}
+
+/* Settings View */
+.settings-group{background:#ffffff0d;border-radius:20px;padding:16px;margin-bottom:16px;border:1px solid #ffffff14}
+.settings-group h3{font:800 16px var(--d);margin-bottom:12px;color:var(--sun)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #ffffff0d}
+.setting-row:last-child{border-bottom:0}
+.toggle{position:relative;width:44px;height:24px;background:#ffffff22;border-radius:99px;cursor:pointer;transition:background .2s}
+.toggle.on{background:var(--mint)}
+.toggle i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle.on i{transform:translateX(20px);background:var(--ink)}
 
 /* Modals */
 .modal-backdrop{position:fixed;inset:0;background:#000a;backdrop-filter:blur(10px);z-index:40;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-backdrop.on{display:flex}
-.modal-card{width:min(100%,480px);max-height:90dvh;overflow-y:auto;background:var(--ink2);border:1px solid #ffffff1c;border-radius:24px;padding:24px;box-shadow:0 24px 60px #000c;animation:popIn .25s ease}
+.modal-card{width:min(100%,480px);max-height:90dvh;overflow-y:auto;background:var(--ink2);border:1px solid #ffffff1c;border-radius:24px;padding:22px;box-shadow:0 24px 60px #000c;animation:popIn .25s ease}
 @keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .modal-hdr h2{font:800 22px var(--d);letter-spacing:-.03em}
 .modal-close{font-size:24px;line-height:1;color:var(--mute);padding:4px 8px;border-radius:8px}
-.modal-close:hover{color:var(--paper)}
 .modal-sub{color:var(--mute);font-size:13px;margin-bottom:16px}
+.btn{background:var(--pink);color:var(--ink);font:700 14px var(--b);padding:10px 20px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.sec{background:#ffffff1a;color:var(--paper)}
+.btn.danger{background:#ff4d4d;color:#fff}
+.btn:hover{filter:brightness(1.08)}
 
-/* Vibe Radar 2D Pad */
+/* Radar Pad & Aura Canvas */
 #vibePad{width:100%;aspect-ratio:1;max-height:280px;background:radial-gradient(circle at center,#ffffff12 0%,#00000044 100%);border:1px solid #ffffff26;border-radius:20px;position:relative;touch-action:none;cursor:crosshair;margin:12px 0}
 #vibePad .axis-x{position:absolute;left:10px;right:10px;top:50%;height:1px;background:#ffffff1f}
 #vibePad .axis-y{position:absolute;top:10px;bottom:10px;left:50%;width:1px;background:#ffffff1f}
 #vibePuck{position:absolute;width:28px;height:28px;border-radius:50%;background:var(--sun);box-shadow:0 0 16px var(--sun);top:50%;left:50%;translate:-50% -50%;pointer-events:none}
 .pad-label{position:absolute;font:700 11px var(--d);color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+#auraCanvas{width:100%;max-width:320px;aspect-ratio:1;border-radius:20px;box-shadow:0 16px 40px #0008;margin:0 auto 16px;display:block}
 
-/* Sound Aura Canvas */
-#auraCanvas{width:100%;max-width:340px;aspect-ratio:1;border-radius:20px;box-shadow:0 16px 40px #0008;margin:0 auto 16px;display:block}
-
-/* Blend Multiplayer Room UI */
+/* Blend Multiplayer */
 .blend-room-card{background:#ffffff0d;border-radius:20px;padding:20px;text-align:center;margin-bottom:16px}
 .blend-code{font:800 36px monospace;letter-spacing:4px;color:var(--sun);margin:10px 0}
 .blend-progress{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin:10px 0 6px}
 .match-score{font:800 56px var(--d);color:var(--mint);line-height:1;margin:10px 0}
 
-/* Daily Blind Overlay */
-.blind-card .shade{background:linear-gradient(transparent 10%,#0b0515 95%)}
-.blind-card img{filter:blur(30px) saturate(0.4)}
-.mystery-tag{display:inline-block;padding:6px 14px;background:var(--pink);color:var(--ink);font:800 14px var(--d);border-radius:99px;margin-bottom:8px}
+/* Stats */
+.stats{display:flex;gap:10px;margin:14px 0}.stats div{flex:1;background:#ffffff0d;border-radius:18px;padding:12px}.stats b{font:800 26px var(--d);display:block}.stats span{color:var(--mute);font-size:12px}
+.tag{display:inline-block;margin:0 6px 6px 0;padding:5px 12px;border-radius:99px;background:#ffffff14;font-size:13px}
+.hero-card{background:linear-gradient(135deg,#ff5c8a22,#ffc85722);border:1px solid #ffffff1f;border-radius:24px;padding:18px;margin-bottom:16px}
 
-/* Toast */
 #toast{position:fixed;top:calc(env(safe-area-inset-top) + 60px);left:50%;translate:-50% -20px;background:var(--paper);color:var(--ink);padding:8px 18px;border-radius:99px;font:700 13px var(--b);opacity:0;transition:.25s;z-index:60;pointer-events:none;white-space:nowrap;box-shadow:0 10px 30px #0006}
 #toast.on{opacity:1;translate:-50% 0}
 .sk{height:64px;border-radius:16px;background:linear-gradient(90deg,#ffffff0d,#ffffff1c,#ffffff0d);background-size:200%;animation:sh 1.2s infinite;margin-bottom:8px}
@@ -178,16 +206,18 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
 <header>
   <div class="logo" id="logo"><i></i>spindle</div>
   <div class="hdr-actions">
-    <button class="pill daily-btn" id="btnOpenDaily">🎯 Daily Blind <b id="dailyStreakBadge">🔥 1</b></button>
+    <button class="pill daily-btn" id="btnOpenDaily">🎯 Daily Blind</button>
     <button class="pill" id="btnOpenRadar">🎛️ Vibe Radar</button>
-    <div class="pill" id="count">0 loved</div>
     <div id="authSlot">
       <button class="pill auth-btn" id="btnShowAuth">Sign in</button>
     </div>
+    <button class="btn-icon" id="btnHeaderSettings" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
   </div>
 </header>
 
-<!-- Time Machine Pill Bar -->
+<!-- Time Machine Pill Bar (Only visible on Discover) -->
 <div class="era-bar" id="eraBar">
   <button class="era-chip on" data-era="all">All Eras</button>
   <button class="era-chip" data-era="70s">70s Classics</button>
@@ -217,17 +247,82 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
   <button class="rb s" id="bp" aria-label="Play or pause"><svg viewBox="0 0 24 24" id="ppi"><path d="M8 5l11 7-11 7z"/></svg></button>
   <button class="rb l" id="bl" aria-label="Love"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9.2C1.8 7.5 4 4.5 7 4.5c2 0 3.7 1.1 5 3 1.3-1.9 3-3 5-3 3 0 5.2 3 4 6.3-2 4.7-9 9.200-9 9.200z"/></svg></button>
  </div>
- <p class="hint">Swipe right to love, left to pass. Scrub vinyl to scratch. Arrow keys work too.</p>
+ <p class="hint">Swipe right to love, left to pass. Drag vinyl to scratch. Arrow keys work too.</p>
 </section>
 
-<!-- 2. FEED VIEW -->
-<section class="view" id="v-feed"><div class="wrap"><h1>Community Feed</h1><p class="sub">What listeners are spinning and sharing in real-time.</p><div id="feed"></div></div></section>
+<!-- 2. REAL COMMUNITY FEED VIEW (NO DUMMY DATA) -->
+<section class="view" id="v-feed">
+  <div class="wrap">
+    <h1>Community Feed</h1>
+    <p class="sub">Live shared tunes, reactions, and discussions from music fans.</p>
+    
+    <!-- Real Post Composer -->
+    <div class="feed-composer">
+      <textarea id="composerText" placeholder="What song are you spinning right now? Share your thoughts..."></textarea>
+      <div id="composerAttachedTrack" style="display:none;margin-bottom:8px"></div>
+      <div class="composer-ftr">
+        <button class="pill" id="btnComposerAttach">🎵 Attach a Song</button>
+        <button class="btn" id="btnPublishPost">Share to Feed</button>
+      </div>
+    </div>
 
-<!-- 3. BLEND MULTIPLAYER VIEW -->
+    <!-- Feed Filters -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="era-chip on" id="feedTabAll">All Community</button>
+      <button class="era-chip" id="feedTabMine">My Posts</button>
+    </div>
+
+    <div id="feed"></div>
+  </div>
+</section>
+
+<!-- 3. INTERNAL DMs & GROUPS VIEW -->
+<section class="view" id="v-messages">
+  <div class="wrap">
+    <!-- Chats List Screen -->
+    <div id="chatListView">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <h1>Messages</h1>
+        <div style="display:flex;gap:6px">
+          <button class="btn sec" id="btnNewDM" style="padding:6px 14px;font-size:12px">+ DM</button>
+          <button class="btn" id="btnNewGroup" style="padding:6px 14px;font-size:12px">👥 New Group</button>
+        </div>
+      </div>
+      <p class="sub">Direct message friends or spin tracks in group listening rooms.</p>
+      <div id="chatsContainer"></div>
+    </div>
+
+    <!-- Active Chat Conversation Screen -->
+    <div id="chatRoomView" style="display:none" class="chat-box">
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #ffffff14">
+        <button class="btn-icon" id="btnBackToChats">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="av" id="activeChatAv" style="width:34px;height:34px;font-size:14px">🎧</div>
+        <div style="flex:1;min-width:0">
+          <b id="activeChatTitle" style="font-size:15px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Chat</b>
+          <small id="activeChatSub" style="color:var(--mute);font-size:11px">Online</small>
+        </div>
+      </div>
+
+      <div class="chat-msgs" id="chatMsgs"></div>
+
+      <div id="chatAttachedSong" style="display:none;padding:6px 10px;background:#ffffff14;border-radius:10px;margin-bottom:4px"></div>
+
+      <div class="chat-input-bar">
+        <button class="btn-icon" id="btnChatAttachSong" title="Attach Loved Track" style="color:var(--sun)">🎵</button>
+        <input type="text" id="chatMsgInput" placeholder="Send a message…">
+        <button class="btn" id="btnSendMsg" style="padding:8px 16px">➤</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. BLEND MULTIPLAYER VIEW -->
 <section class="view" id="v-blend">
   <div class="wrap">
     <h1>Spindle Blend</h1>
-    <p class="sub">Tinder for music. Join a room with a friend, swipe the same 10 tracks, and reveal your shared music compatibility.</p>
+    <p class="sub">Tinder for music. Join a room with a friend, swipe the same 10 tracks, and reveal your shared compatibility.</p>
     
     <div id="blendLobby">
       <div class="hero-card">
@@ -251,30 +346,6 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
   </div>
 </section>
 
-<!-- 4. FOR YOU VIEW -->
-<section class="view" id="v-foryou">
-  <div class="wrap">
-    <h1>For you</h1>
-    <p class="sub" id="fySub">Swipe a few songs and your picks appear here.</p>
-    
-    <!-- Sound Aura Hero Card -->
-    <div class="hero-card">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <h3>✨ Your Sound Aura</h3>
-          <p>Generate your visual music DNA card based on your swipe affinities.</p>
-        </div>
-        <button class="btn" id="btnRevealAura">View Aura</button>
-      </div>
-    </div>
-
-    <div class="stats"><div><b id="sL">0</b><span>loved</span></div><div><b id="sP">0</b><span>passed</span></div><div><b id="sA">0</b><span>artists</span></div></div>
-    <div class="bars" id="bars"></div>
-    <div id="tags" style="margin:12px 0"></div>
-    <div id="recs"></div>
-  </div>
-</section>
-
 <!-- 5. LIBRARY VIEW -->
 <section class="view" id="v-lib">
   <div class="wrap">
@@ -288,28 +359,187 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
     <div id="lib" style="margin-top:18px"></div>
   </div>
 </section>
+
+<!-- 6. ACCOUNTS VIEW -->
+<section class="view" id="v-account">
+  <div class="wrap">
+    <div class="profile-card">
+      <div class="profile-av" id="profAv">🎧</div>
+      <h2 style="font:800 24px var(--d)" id="profName">Music Listener</h2>
+      <span style="color:var(--sun);font-size:13px;font-weight:700" id="profHandle">@listener</span>
+      <p class="profile-bio" id="profBio">No bio added yet. Tell others what sound you vibe with!</p>
+      <div style="display:flex;justify-content:center;gap:10px">
+        <button class="btn sec" id="btnEditProfile">Edit Profile</button>
+        <button class="btn sec" id="btnOpenAuraFromProf">✨ Sound Aura</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div><b id="profLoved">0</b><span>loved</span></div>
+      <div><b id="profPassed">0</b><span>passed</span></div>
+      <div><b id="profStreak">🔥 1</b><span>streak</span></div>
+    </div>
+
+    <h3 style="font:800 18px var(--d);margin:20px 0 10px">Top Genres</h3>
+    <div id="profGenres"></div>
+
+    <h3 style="font:800 18px var(--d);margin:24px 0 10px">My Posts</h3>
+    <div id="profMyPosts"></div>
+  </div>
+</section>
+
+<!-- 7. SETTINGS VIEW -->
+<section class="view" id="v-settings">
+  <div class="wrap">
+    <h1>Settings</h1>
+    <p class="sub">Tailor your audio playback, visual styling, and account settings.</p>
+
+    <div class="settings-group">
+      <h3>Audio Experience</h3>
+      <div class="setting-row">
+        <div><b>DJ Vinyl Scratching</b><p style="font-size:12px;color:var(--mute)">Synthesize friction scratching sounds when scrubbing disc</p></div>
+        <div class="toggle on" id="togScratch"><i></i></div>
+      </div>
+      <div class="setting-row">
+        <div><b>Tape-Stop Slowdown</b><p style="font-size:12px;color:var(--mute)">Pitch drop when pulling down on cards</p></div>
+        <div class="toggle on" id="togTapeStop"><i></i></div>
+      </div>
+      <div class="setting-row">
+        <div><b>Autoplay Previews</b><p style="font-size:12px;color:var(--mute)">Start playing preview audio as soon as a card loads</p></div>
+        <div class="toggle on" id="togAutoplay"><i></i></div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Visuals & Theme</h3>
+      <div class="setting-row">
+        <div><b>Beat-Reactive Background</b><p style="font-size:12px;color:var(--mute)">Ambient glow pulses to audio sub-bass</p></div>
+        <div class="toggle on" id="togReactive"><i></i></div>
+      </div>
+      <div class="setting-row">
+        <div><b>Color Theme</b><p style="font-size:12px;color:var(--mute)">Choose your aesthetic mood</p></div>
+        <select id="selTheme" style="background:#00000044;border:1px solid #ffffff22;color:#fff;padding:6px 12px;border-radius:10px;font:inherit">
+          <option value="default">Deep Ink (Default)</option>
+          <option value="midnight">Midnight AMOLED</option>
+          <option value="cyber">Cyber Neon</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Account & Cache</h3>
+      <div class="setting-row">
+        <div><b>Connected Account</b><p style="font-size:12px;color:var(--mute)" id="settingsEmail">Not signed in</p></div>
+        <button class="btn sec" style="padding:6px 14px;font-size:12px" id="btnSettingsAuth">Sign In</button>
+      </div>
+      <div class="setting-row">
+        <div><b>Clear Swipe History</b><p style="font-size:12px;color:var(--mute)">Reset seen and noped song cache</p></div>
+        <button class="btn sec" style="padding:6px 14px;font-size:12px" id="btnClearCache">Clear</button>
+      </div>
+      <div class="setting-row">
+        <div><b>Sign Out</b><p style="font-size:12px;color:var(--mute)">Log out of Spindle on this device</p></div>
+        <button class="btn danger" style="padding:6px 14px;font-size:12px" id="btnSignOutFull">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 
+<!-- Bottom Nav -->
 <nav>
  <button data-v="discover" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg>Discover</button>
  <button data-v="feed"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Feed</button>
+ <button data-v="messages" id="navBtnMessages"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>DMs<i class="nav-badge" id="msgDot" style="display:none"></i></button>
  <button data-v="blend"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/></svg>Blend</button>
- <button data-v="foryou"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 6 6.500.5-5 4.300 1.600 6.400L12 16.500 6.400 20.200 8 13.800 3 9.500 9.500 9z"/></svg>For you</button>
  <button data-v="lib"><svg viewBox="0 0 24 24"><path d="M5 4v16M10 4v16M15 6l5 13"/></svg>Library</button>
 </nav>
 </div>
 
 <!-- ================= MODALS ================= -->
 
-<!-- 1. VIBE RADAR MODAL -->
+<!-- 1. EDIT PROFILE MODAL -->
+<div id="editProfileModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-hdr">
+      <h2>Edit Profile</h2>
+      <button class="modal-close" data-close="editProfileModal">&times;</button>
+    </div>
+    <form id="editProfileForm">
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Display Name</label>
+        <input type="text" id="editName" required style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Username / Handle</label>
+        <input type="text" id="editHandle" placeholder="e.g. vinyljunkie" style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Bio</label>
+        <textarea id="editBio" maxlength="250" placeholder="Favorite genres, current obsessions..." style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff;min-height:70px"></textarea>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:6px">Avatar Emoji</label>
+        <div style="display:flex;gap:8px;font-size:20px" id="emojiRow">
+          <button type="button" class="era-chip on">🎧</button>
+          <button type="button" class="era-chip">🎵</button>
+          <button type="button" class="era-chip">⚡</button>
+          <button type="button" class="era-chip">🌙</button>
+          <button type="button" class="era-chip">🔥</button>
+          <button type="button" class="era-chip">💿</button>
+        </div>
+      </div>
+      <button type="submit" class="btn" style="width:100%">Save Profile</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. NEW CHAT / GROUP MODAL -->
+<div id="newChatModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-hdr">
+      <h2 id="newChatTitle">New Direct Message</h2>
+      <button class="modal-close" data-close="newChatModal">&times;</button>
+    </div>
+    
+    <div style="display:flex;background:#ffffff0d;border-radius:12px;padding:4px;margin-bottom:16px;gap:4px">
+      <button class="era-chip on" id="tabNewDM" style="flex:1;text-align:center">1-on-1 DM</button>
+      <button class="era-chip" id="tabNewGroup" style="flex:1;text-align:center">Group Chat</button>
+    </div>
+
+    <form id="newChatForm">
+      <div id="grpFields" style="display:none;margin-bottom:12px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Group Name</label>
+        <input type="text" id="grpName" placeholder="e.g. Late Night Vinyl Club 🌙" style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px" id="lblChatTarget">Recipient Email</label>
+        <input type="email" id="chatTargetEmail" required placeholder="friend@example.com" style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
+      </div>
+      <button type="submit" class="btn" style="width:100%" id="btnCreateChatSubmit">Start Chat</button>
+    </form>
+  </div>
+</div>
+
+<!-- 3. SELECT SONG MODAL (for Composer & Chat Attachments) -->
+<div id="selectSongModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-hdr">
+      <h2>Attach a Song</h2>
+      <button class="modal-close" data-close="selectSongModal">&times;</button>
+    </div>
+    <p class="modal-sub">Pick from your loved library to share.</p>
+    <div id="selectSongList" style="max-height:360px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- 4. VIBE RADAR MODAL -->
 <div id="vibeModal" class="modal-backdrop">
   <div class="modal-card">
     <div class="modal-hdr">
       <h2>🎛️ 2D Vibe Radar</h2>
       <button class="modal-close" data-close="vibeModal">&times;</button>
     </div>
-    <p class="modal-sub">Drag the puck to bias your music feed between energy and era.</p>
-    
+    <p class="modal-sub">Drag the puck to bias your discovery stream.</p>
     <div id="vibePad">
       <div class="axis-x"></div>
       <div class="axis-y"></div>
@@ -319,13 +549,12 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
       <span class="pad-label" style="right:12px;top:50%;translate:0 -50%">Hype</span>
       <div id="vibePuck"></div>
     </div>
-    
     <div style="text-align:center;font-weight:700;color:var(--sun);margin-bottom:14px" id="vibeCurrent">Active Vibe: Balanced Eclectic</div>
     <button class="btn" style="width:100%" id="btnApplyVibe">Lock In Vibe & Refresh Deck</button>
   </div>
 </div>
 
-<!-- 2. SOUND AURA MODAL -->
+<!-- 5. SOUND AURA MODAL -->
 <div id="auraModal" class="modal-backdrop">
   <div class="modal-card" style="text-align:center">
     <div class="modal-hdr">
@@ -334,14 +563,14 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
     </div>
     <p class="modal-sub">Your personalized visual sonic signature.</p>
     <canvas id="auraCanvas" width="700" height="700"></canvas>
-    <div class="btn-group" style="justify-content:center">
+    <div style="display:flex;justify-content:center;gap:10px">
       <button class="btn" id="btnDownloadAura">Download Image</button>
       <button class="btn sec" id="btnShareAura">Share</button>
     </div>
   </div>
 </div>
 
-<!-- 3. EXPORT PLAYLIST MODAL -->
+<!-- 6. EXPORT PLAYLIST MODAL -->
 <div id="exportModal" class="modal-backdrop">
   <div class="modal-card">
     <div class="modal-hdr">
@@ -349,13 +578,11 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
       <button class="modal-close" data-close="exportModal">&times;</button>
     </div>
     <p class="modal-sub">Transfer all your Spindle discoveries straight into Spotify or Apple Music.</p>
-    
     <div class="hero-card" style="margin-bottom:12px">
       <h3>1. Direct Spotify Search</h3>
       <p>Open Spotify with all your top loved tracks queued up.</p>
       <button class="btn" id="btnExportSpotify">Open in Spotify</button>
     </div>
-
     <div class="hero-card" style="background:#ffffff0d">
       <h3>2. Universal Playlist File</h3>
       <p>Download a pre-formatted .CSV file compatible with TuneMyMusic and SongShift for 1-click import.</p>
@@ -365,47 +592,39 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
   </div>
 </div>
 
-<!-- 4. DAILY BLIND 10 CHALLENGE MODAL -->
+<!-- 7. DAILY BLIND MODAL -->
 <div id="dailyModal" class="modal-backdrop">
   <div class="modal-card">
     <div class="modal-hdr">
       <h2>🎯 Daily Blind 10</h2>
       <button class="modal-close" data-close="dailyModal">&times;</button>
     </div>
-    <div id="dailyBody">
-      <p class="modal-sub">Can your ears tell the artist and era without seeing the album cover? 10 mystery tracks refreshed daily.</p>
-      <div style="background:#ffffff0d;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px">
-        <div style="font-size:32px;margin-bottom:6px">🔥</div>
-        <b style="font-size:18px" id="dailyStreakText">1 Day Streak</b>
-        <p style="font-size:12px;color:var(--mute)">Swipe blind to train your pure intuition.</p>
-      </div>
-      <button class="btn" style="width:100%" id="btnStartDaily">Start Today's Blind 10</button>
+    <div style="background:#ffffff0d;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px">
+      <div style="font-size:32px;margin-bottom:6px">🔥</div>
+      <b style="font-size:18px" id="dailyStreakText">1 Day Streak</b>
+      <p style="font-size:12px;color:var(--mute)">Swipe blind to train your pure intuition.</p>
     </div>
+    <button class="btn" style="width:100%" id="btnStartDaily">Start Today's Blind 10</button>
   </div>
 </div>
 
-<!-- 5. SHARE SHEET -->
-<div id="sheet" class="modal-backdrop"><div class="modal-card" style="align-self:flex-end;width:min(100%,520px);border-radius:24px 24px 0 0"><h2 style="font:800 22px var(--d)">Share to feed</h2><div class="row" id="shRow" style="margin-top:10px"></div><input id="cap" maxlength="120" placeholder="Say something about this song" style="width:100%;margin:12px 0;padding:14px;border-radius:14px;border:1px solid #ffffff22;background:#00000033;color:var(--paper);font:inherit"><button class="btn" id="shGo">Post</button></div></div>
-
-<!-- 6. AUTH MODAL -->
+<!-- 8. AUTH MODAL -->
 <div id="authModal" class="modal-backdrop">
   <div class="modal-card" style="width:min(100%,400px)">
     <div class="modal-hdr">
       <h2 id="authTitle">Sign in to Spindle</h2>
       <button class="modal-close" data-close="authModal">&times;</button>
     </div>
-    <p class="modal-sub" id="authSub">Save your taste across devices and blend with friends.</p>
-    
+    <p class="modal-sub" id="authSub">Save your taste across devices and message friends.</p>
     <div style="display:flex;background:#ffffff0d;border-radius:12px;padding:4px;margin-bottom:16px;gap:4px">
       <button class="era-chip on" id="tabLogin" style="flex:1;text-align:center">Log In</button>
       <button class="era-chip" id="tabSignup" style="flex:1;text-align:center">Sign Up</button>
     </div>
-
     <form id="authForm">
       <div id="authError" style="display:none;padding:10px;border-radius:10px;background:#ff5c8a22;border:1px solid #ff5c8a66;color:#ff85a8;font-size:13px;margin-bottom:12px"></div>
       <div id="nameGrp" style="display:none;margin-bottom:10px">
         <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Display Name</label>
-        <input type="text" id="authName" placeholder="e.g. Velvet Sound" style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
+        <input type="text" id="authName" placeholder="e.g. Luna Wave" style="width:100%;padding:12px;border-radius:12px;background:#00000044;border:1px solid #ffffff22;color:#fff">
       </div>
       <div style="margin-bottom:10px">
         <label style="display:block;font-size:12px;color:var(--mute);margin-bottom:4px">Email</label>
@@ -417,13 +636,8 @@ h1{font:800 30px/1 var(--d);letter-spacing:-.04em;margin:10px 0 4px}
       </div>
       <button type="submit" class="btn" style="width:100%" id="authSubmitBtn">Log In</button>
     </form>
-
     <div style="display:flex;align-items:center;margin:16px 0;color:var(--mute);font-size:12px"><span style="flex:1;height:1px;background:#ffffff14"></span><span style="padding:0 8px">or</span><span style="flex:1;height:1px;background:#ffffff14"></span></div>
-
-    <button class="btn sec" id="btnGoogle" style="width:100%" type="button">
-      <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.2c0 2.8.7 5.4 1.9 7.8l3.7-2.9z"/><path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/></svg>
-      Continue with Google
-    </button>
+    <button class="btn sec" id="btnGoogle" style="width:100%" type="button">Continue with Google</button>
   </div>
 </div>
 
@@ -452,6 +666,7 @@ import {
   collection, 
   addDoc, 
   query, 
+  where,
   orderBy, 
   limit, 
   onSnapshot, 
@@ -480,11 +695,16 @@ const db = getFirestore(app);
 /* Core App State & Helpers */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LS='spindle.v2';
-let S={liked:[],noped:[],seen:[],genre:{},artist:{},decade:{},posts:[],roasts:{},streak:1,lastDaily:''};
+const LS='spindle.v3';
+let S={
+  liked:[],noped:[],seen:[],genre:{},artist:{},decade:{},posts:[],
+  roasts:{},streak:1,lastDaily:'',
+  userProfile:{bio:'',handle:'',avatarEmoji:'🎧'},
+  settings:{scratch:true,tapeStop:true,autoplay:true,reactive:true,theme:'default'}
+};
 try{Object.assign(S,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 
-const PALETTE=['#ff5c8a','#ffc857','#5ce1c6','#b79cff','#ff8a5c'];
+const PALETTE=['#ff5c8a','#ffc857','#5ce1c6','#b79cff','#ff8a5c','#4ade80'];
 const getUserColor=id=>{
   let hash=0;
   for(let i=0;i<(id||'').length;i++) hash=id.charCodeAt(i)+((hash<<5)-hash);
@@ -496,10 +716,13 @@ let firestorePosts=[];
 let selectedEra='all';
 let currentVibe={x:0,y:0,name:'Balanced Eclectic'};
 let isBlindMode=false;
+let activeChatId=null,activeChatData=null,chatMsgsUnsub=null,chatsListUnsub=null;
+let attachTarget=null; // 'composer' or 'chat'
+let composerTrack=null,chatAttachedTrack=null;
 
 const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 
-// Sync state to online Firestore database for logged-in user
+// Sync user state to Firestore
 let syncTimer=null;
 function syncUserToFirestore(){
   saveLocal();
@@ -512,6 +735,9 @@ function syncUserToFirestore(){
         uid:currentUser.uid,
         displayName:(currentUser.displayName||'Music Fan').slice(0,100),
         email:userEmail,
+        handle:(S.userProfile?.handle||'').slice(0,30),
+        bio:(S.userProfile?.bio||'').slice(0,250),
+        avatarEmoji:S.userProfile?.avatarEmoji||'🎧',
         avatarColor:getUserColor(currentUser.uid),
         liked:S.liked,
         noped:S.noped,
@@ -519,17 +745,14 @@ function syncUserToFirestore(){
         genre:S.genre,
         artist:S.artist,
         decade:S.decade,
+        settings:S.settings,
         updatedAt:serverTimestamp()
       },{merge:true});
-    }catch(err){
-      console.warn('Firestore user sync notice:',err);
-    }
+    }catch(err){console.warn('User sync notice:',err)}
   },600);
 }
 
 const SEEDS=['indie pop','hip hop','r&b soul','electronic','alternative rock','jazz','bollywood','k-pop','lofi','afrobeats','synthwave','latin pop','classic rock','house','folk','punk'];
-const FRIENDS=[{n:'Maya',c:'#ff5c8a',q:'indie pop',g:['Alternative','Pop','Indie Pop']},{n:'Kabir',c:'#ffc857',q:'bollywood',g:['Bollywood','World']},{n:'Noor',c:'#5ce1c6',q:'lofi hip hop',g:['Hip-Hop/Rap','R&B/Soul']},{n:'Jules',c:'#b79cff',q:'synthwave',g:['Electronic','Dance']}];
-const CAPS=['on repeat all week','this one hits different at 2am','no skips, trust me','found it by accident','play this loud','the bridge though'];
 const pick=a=>a[Math.random()*a.length|0];
 const dec=t=>t.year?Math.floor(t.year/10)*10+'s':'?';
 
@@ -538,7 +761,7 @@ audio.crossOrigin="anonymous";
 audio.volume=.8;
 
 /* ==============================================================
-   1. WEB AUDIO API & VINYL SCRATCH SYNTHESIS + ANALYSER
+   1. WEB AUDIO API & VINYL SCRATCHING
    ============================================================== */
 let audioCtx=null,analyser=null,sourceNode=null,dataArray=null;
 function initWebAudio(){
@@ -553,18 +776,13 @@ function initWebAudio(){
       sourceNode=audioCtx.createMediaElementSource(audio);
       sourceNode.connect(analyser);
       analyser.connect(audioCtx.destination);
-    }catch(err){
-      console.warn('Media element source fallback:', err);
-    }
+    }catch(err){}
     requestAnimationFrame(renderAudioReactivity);
-  }catch(e){
-    console.warn('Web Audio init:', e);
-  }
+  }catch(e){}
 }
 
-// DJ Scratching Sound Synthesizer
 function playScratchSound(intensity=1){
-  if(!audioCtx) return;
+  if(!S.settings.scratch || !audioCtx) return;
   try{
     if(audioCtx.state==='suspended') audioCtx.resume();
     const bufferSize=audioCtx.sampleRate*0.08;
@@ -574,9 +792,7 @@ function playScratchSound(intensity=1){
     const noise=audioCtx.createBufferSource();
     noise.buffer=buffer;
     const filter=audioCtx.createBiquadFilter();
-    filter.type="bandpass";
-    filter.frequency.value=800+intensity*1200;
-    filter.Q.value=3;
+    filter.type="bandpass";filter.frequency.value=800+intensity*1200;filter.Q.value=3;
     const gain=audioCtx.createGain();
     gain.gain.setValueAtTime(0.35*intensity,audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.07);
@@ -585,25 +801,21 @@ function playScratchSound(intensity=1){
   }catch(err){}
 }
 
-// Beat-Reactive Background & Vinyl Groove Pulsing
 function renderAudioReactivity(){
-  if(analyser && playing){
+  if(analyser && playing && S.settings.reactive){
     analyser.getByteFrequencyData(dataArray);
     const bass=dataArray.slice(0,4).reduce((a,b)=>a+b,0)/4/255;
     const bg=$('#bg');
     if(bg){
-      const scale=1+bass*0.06;
-      bg.style.transform=`scale(${scale})`;
+      bg.style.transform=`scale(${1+bass*0.06})`;
       bg.style.filter=`blur(70px) saturate(${1.4+bass*0.5})`;
     }
   }
   requestAnimationFrame(renderAudioReactivity);
 }
 
-// Jump into the Drop (⚡ Drop Button)
 $('#bDrop').onclick=()=>{
-  unlocked=true;
-  initWebAudio();
+  unlocked=true;initWebAudio();
   if(!deck.length) return;
   if(!audio.src || audio.src!==deck[0].prev) play(deck[0]);
   audio.currentTime=Math.min(audio.duration?audio.duration-4:24, 13.5);
@@ -612,7 +824,7 @@ $('#bDrop').onclick=()=>{
 };
 
 /* ==============================================================
-   2. CANDIDATES GENERATOR & ERA/VIBE FILTERING
+   2. MUSIC SEARCH & CANDIDATES
    ============================================================== */
 async function search(q,l=25){
  const j=await new Promise((ok,bad)=>{
@@ -632,7 +844,6 @@ const score=t=>(S.genre[t.genre]||0)+1.5*(S.artist[t.artist]||0)+.5*(S.decade[de
 
 async function candidates(){
  let queries=[];
- // 1. Era-based filtering
  if(selectedEra==='70s') queries.push(['1970s rock funk disco',25]);
  else if(selectedEra==='80s') queries.push(['1980s pop synthwave retro',25]);
  else if(selectedEra==='90s') queries.push(['1990s alternative hip hop',25]);
@@ -640,15 +851,12 @@ async function candidates(){
  else if(selectedEra==='10s') queries.push(['2010s indie pop edm',25]);
  else if(selectedEra==='20s') queries.push(['2023 2024 trending pop',25]);
  
- // 2. Vibe-based filtering
  if(currentVibe.x>0.3) queries.push(['hype dance trap rock',20]);
  else if(currentVibe.x<-0.3) queries.push(['chill lofi acoustic ambient',20]);
  if(currentVibe.y>0.3) queries.push(['futuristic synthwave hyperpop electronic',20]);
  else if(currentVibe.y<-0.3) queries.push(['vintage soul classic jazz retro',20]);
 
- if(queries.length<2){
-   queries.push(...topK(S.artist,2).map(a=>[a,15]),...topK(S.genre,2).map(g=>[g,20]),[pick(SEEDS),20]);
- }
+ if(queries.length<2) queries.push(...topK(S.artist,2).map(a=>[a,15]),...topK(S.genre,2).map(g=>[g,20]),[pick(SEEDS),20]);
  if(queries.length<3) queries.push([pick(SEEDS),20]);
 
  const seen=new Set([...S.seen,...deck.map(t=>t.id)]),m=new Map();
@@ -672,12 +880,12 @@ async function candidates(){
 async function refill(){
  if(loading)return;loading=true;
  try{const c=await candidates();deck.push(...c);if(!c.length&&!deck.length)throw 0}
- catch(e){if(!deck.length)$('#deck').innerHTML='<div class="empty"><div><b>Couldn\'t reach the catalog.</b><br>Check connection, then tap anywhere to retry.</div></div>',$('#deck').onclick=()=>{$('#deck').onclick=null;refill()}}
+ catch(e){if(!deck.length)$('#deck').innerHTML='<div class="empty"><div><b>Couldn\'t reach catalog.</b><br>Check connection, then tap anywhere to retry.</div></div>',$('#deck').onclick=()=>{$('#deck').onclick=null;refill()}}
  loading=false;renderDeck();
 }
 
 /* ==============================================================
-   3. DECK RENDERING, GESTURES, SCRATCHING & TAPE STOP
+   3. DECK RENDERING & SCRATCHING
    ============================================================== */
 function renderDeck(){
  const el=$('#deck');if(!deck.length){if(!el.onclick)el.innerHTML='<div class="empty">Finding songs…</div>';return}
@@ -685,51 +893,31 @@ function renderDeck(){
  deck.slice(0,3).map((t,i)=>{
   const c=document.createElement('div');c.className='card'+(isBlindMode?' blind-card':'');c.dataset.i=i;
   c.style.zIndex=3-i;if(i){c.style.transform=`scale(${1-.05*i}) translateY(${-14*i}px)`;c.style.transition='none'}
-  
   const titleDisplay=isBlindMode?'Mystery Track':esc(t.name);
   const artistDisplay=isBlindMode?'Guess the Artist':esc(t.artist);
   const genreChip=isBlindMode?'Blind Mode':esc(t.genre)+(t.year?' · '+t.year:'');
-
   c.innerHTML=`<img src="${esc(t.art)}" alt="" draggable="false"><div class="shade"></div><div class="stamp like">LOVE</div><div class="stamp nope">PASS</div>${i?'':'<button class="pp" aria-label="Play">'+(playing?'❚❚':'▶')+'</button>'}<div class="meta"><span class="chip">${genreChip}</span><h2>${titleDisplay}</h2><p>${artistDisplay}</p><div class="bar"><i></i></div></div>`;
   return c}).reverse().forEach(c=>el.appendChild(c));
- 
  bindCard($('.card[data-i="0"]'));
  bindDisc($('#mainDisc'));
  $('#bg').style.backgroundImage=`url("${deck[0].art}")`;
- if(unlocked) play(deck[0]);
+ if(unlocked && S.settings.autoplay) play(deck[0]);
 }
 
-// Vinyl Disc Scrubbing & Scratching
 function bindDisc(d){
   if(!d) return;
   let dragging=false,startY=0,lastScratch=0;
-  d.onpointerdown=e=>{
-    dragging=true;
-    startY=e.clientY;
-    d.setPointerCapture(e.pointerId);
-    d.classList.add('scratching');
-    initWebAudio();
-  };
+  d.onpointerdown=e=>{dragging=true;startY=e.clientY;d.setPointerCapture(e.pointerId);d.classList.add('scratching');initWebAudio()};
   d.onpointermove=e=>{
     if(!dragging) return;
-    const dy=e.clientY-startY;
-    startY=e.clientY;
+    const dy=e.clientY-startY;startY=e.clientY;
     const now=Date.now();
-    if(now-lastScratch>55){
-      playScratchSound(Math.min(2.5,Math.abs(dy)/4));
-      lastScratch=now;
-    }
-    if(audio.duration){
-      audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+(dy*0.05)));
-    }
+    if(now-lastScratch>55){playScratchSound(Math.min(2.5,Math.abs(dy)/4));lastScratch=now}
+    if(audio.duration) audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+(dy*0.05)));
   };
-  d.onpointerup=d.onpointercancel=()=>{
-    dragging=false;
-    d.classList.remove('scratching');
-  };
+  d.onpointerup=d.onpointercancel=()=>{dragging=false;d.classList.remove('scratching')};
 }
 
-// Card swipe gestures & Tape Stop effect
 function bindCard(c){
  let sx,sy,dx=0,dy=0,on=false,t0;
  const like=$('.like',c),nope=$('.nope',c);
@@ -742,29 +930,23 @@ function bindCard(c){
  c.onpointermove=e=>{
    if(!on)return;
    dx=e.clientX-sx;dy=e.clientY-sy;
-   // Pulling down causes tape stop deceleration
-   if(dy>40 && Math.abs(dx)<80){
-     const slow=Math.max(0.15,1-(dy-40)/140);
-     audio.playbackRate=slow;
+   if(S.settings.tapeStop && dy>40 && Math.abs(dx)<80){
+     audio.playbackRate=Math.max(0.15,1-(dy-40)/140);
      c.classList.add('tape-stop');
    } else {
-     audio.playbackRate=1;
-     c.classList.remove('tape-stop');
+     audio.playbackRate=1;c.classList.remove('tape-stop');
    }
    c.style.transform=`translate(${dx}px,${dy*.4}px) rotate(${dx/18}deg)`;
    like.style.opacity=Math.max(0,dx/110);
    nope.style.opacity=Math.max(0,-dx/110);
  };
- c.onpointerup=c.onpointercancel=e=>{
+ c.onpointerup=c.onpointercancel=()=>{
   if(!on)return;on=false;c.style.transition='';
   audio.playbackRate=1;c.classList.remove('tape-stop');
   const v=Math.abs(dx)/(Date.now()-t0+1);
   if(Math.abs(dx)<8 && Math.abs(dy)<8){toggle();return}
-  if(Math.abs(dx)>100||(v>.6&&Math.abs(dx)>40)){
-    fling(dx>0?1:-1);
-  } else {
-    c.style.transform='';like.style.opacity=nope.style.opacity=0;
-  }
+  if(Math.abs(dx)>100||(v>.6&&Math.abs(dx)>40)) fling(dx>0?1:-1);
+  else {c.style.transform='';like.style.opacity=nope.style.opacity=0}
  };
  $('.pp',c).onclick=e=>{e.stopPropagation();toggle()};
 }
@@ -793,10 +975,9 @@ function decide(t,d){
 }
 
 function stats(){
- $('#count').textContent=S.liked.length+' loved';
- $('#sL').textContent=S.liked.length;
- $('#sP').textContent=S.noped.length;
- $('#sA').textContent=topK(S.artist,99).length;
+ $('#profLoved')&&( $('#profLoved').textContent=S.liked.length );
+ $('#profPassed')&&( $('#profPassed').textContent=S.noped.length );
+ $('#profStreak')&&( $('#profStreak').textContent='🔥 '+(S.streak||1) );
 }
 
 function toast(m){
@@ -804,23 +985,19 @@ function toast(m){
  clearTimeout(toast.k);toast.k=setTimeout(()=>t.classList.remove('on'),1600);
 }
 
-// Pass Roasting Quick Popup
 let roastTimer=null;
 function showRoastPopup(){
-  const rb=$('#roastBar');
-  rb.classList.add('on');
-  clearTimeout(roastTimer);
-  roastTimer=setTimeout(()=>rb.classList.remove('on'),2800);
+  const rb=$('#roastBar');rb.classList.add('on');
+  clearTimeout(roastTimer);roastTimer=setTimeout(()=>rb.classList.remove('on'),2800);
 }
 $$('.roast-chip').forEach(btn=>btn.onclick=e=>{
   const roast=e.target.dataset.roast;
-  S.roasts[roast]=(S.roasts[roast]||0)+1;
-  saveLocal();
+  S.roasts[roast]=(S.roasts[roast]||0)+1;saveLocal();
   toast('Feedback logged: '+roast);
   $('#roastBar').classList.remove('on');
 });
 
-/* Audio */
+/* Audio Controls */
 function play(t){initWebAudio();audio.src=t.prev;audio.play().then(()=>setP(true)).catch(()=>setP(false))}
 function toggle(){unlocked=true;initWebAudio();if(!deck.length)return;if(!audio.src||audio.ended||audio.src!==deck[0].prev)return play(deck[0]);audio.paused?audio.play().then(()=>setP(true)):(audio.pause(),setP(false))}
 function setP(p){playing=p;$('.disc')?.classList.toggle('play',p);$('#logo').classList.toggle('paused',!p);const b=$('.pp');if(b)b.textContent=p?'❚❚':'▶';$('#ppi').innerHTML=p?'<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>':'<path d="M8 5l11 7-11 7z"/>'}
@@ -830,31 +1007,34 @@ audio.onended=()=>setP(false);
 $('#bn').onclick=()=>fling(-1);$('#bl').onclick=()=>fling(1);$('#bp').onclick=toggle;
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')fling(1);else if(e.key==='ArrowLeft')fling(-1);else if(e.key===' '){e.preventDefault();toggle()}});
 
-/* Era Chips Filter */
 $$('.era-chip[data-era]').forEach(btn=>btn.onclick=()=>{
   $$('.era-chip[data-era]').forEach(b=>b.classList.toggle('on',b===btn));
-  selectedEra=btn.dataset.era;
-  deck=[];
-  refill();
-  toast('Era: '+btn.textContent);
+  selectedEra=btn.dataset.era;deck=[];refill();toast('Era: '+btn.textContent);
 });
 
-/* Navigation */
-$$('nav button').forEach(b=>b.onclick=()=>{
- $$('nav button').forEach(x=>x.classList.toggle('on',x===b));
- $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));
- if(b.dataset.v!=='discover'){audio.pause();setP(false)}
- if(b.dataset.v==='feed') renderFeed();
- if(b.dataset.v==='foryou') renderForYou();
- if(b.dataset.v==='lib') renderLib();
- if(b.dataset.v==='blend') renderBlendView();
-});
+/* ==============================================================
+   4. NAVIGATION & VIEW SWITCHING
+   ============================================================== */
+function switchView(name){
+  $$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===name));
+  $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+name));
+  $('#eraBar').style.display=name==='discover'?'flex':'none';
+  if(name!=='discover'){audio.pause();setP(false)}
+  if(name==='feed') renderFeed();
+  if(name==='messages') renderChatsList();
+  if(name==='blend') renderBlendView();
+  if(name==='lib') renderLib();
+  if(name==='account') renderAccountPage();
+  if(name==='settings') renderSettingsPage();
+}
 
-/* Rows & Interactions */
+$$('nav button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
+$('#btnHeaderSettings').onclick=()=>switchView('settings');
+
 const rowH=(t,btn='')=>`<div class="row"><img src="${esc(t.art)}" alt=""><div class="t"><b>${esc(t.name)}</b><span>${esc(t.artist)} · ${esc(t.genre)}</span></div><button class="ib" data-play="${t.id}" aria-label="Preview">▶</button>${btn}</div>`;
 const byId={};const reg=a=>a.forEach(t=>{if(t&&t.id)byId[t.id]=t});
 let curBtn=null;
-const heart='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20s-7-4.5-9-9.2C1.8 7.5 4 4.5 7 4.5c2 0 3.7 1.1 5 3 1.3-1.9 3-3 5-3 3 0 5.2 3 4 6.3-2 4.7-9 9.200-9 9.200z"/></svg>';
+const heart='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20s-7-4.5-9-9.2C1.8 7.5 4 4.5 7 4.5c2 0 3.7 1.1 5 3 1.3-1.9 3-3 5-3 3 0 5.2 3 4 6.3-2 4.7-9 9.200-9 9.200z"/></svg>';
 
 document.addEventListener('click',async e=>{
  const p=e.target.closest('[data-play]');
@@ -863,38 +1043,541 @@ document.addEventListener('click',async e=>{
  
  const l=e.target.closest('[data-love]');
  if(l){const t=byId[l.dataset.love];if(t&&!S.liked.some(x=>x.id===t.id)){decide(t,1);l.classList.add('on')}}
- 
- const s=e.target.closest('[data-share]');
- if(s){
-   if(!currentUser){openAuthModal('Sign in to share to the feed.');return}
-   openShare(byId[s.dataset.share]);
- }
- 
+
+ // Feed like
  const fl=e.target.closest('[data-post-like]');
  if(fl){
    if(!currentUser){openAuthModal('Sign in to like posts.');return}
    const postId=fl.dataset.postLike;
    const post=firestorePosts.find(x=>x.id===postId);
-   const likedBy=post?.likedBy||[];
-   const isLiked=likedBy.includes(currentUser.uid);
+   const isLiked=post?.likedBy?.includes(currentUser.uid);
    try{
      await updateDoc(doc(db,'posts',postId),{
-       likesCount: increment(isLiked ? -1 : 1),
-       likedBy: isLiked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
+       likesCount: increment(isLiked?-1:1),
+       likedBy: isLiked?arrayRemove(currentUser.uid):arrayUnion(currentUser.uid)
      });
-   }catch(err){
-     console.error('Like error:',err);
-   }
+   }catch(err){}
  }
 
- const f=e.target.closest('[data-fl]');
- if(f){f.classList.toggle('on');const n=f.querySelector('b');n.textContent=+n.textContent+(f.classList.contains('on')?1:-1)}
+ // Toggle comments
+ const tc=e.target.closest('[data-toggle-comments]');
+ if(tc){
+   const sec=$('#comments-'+tc.dataset.toggleComments);
+   if(sec) sec.classList.toggle('on');
+ }
 });
 
 /* ==============================================================
-   4. SPINDLE BLEND (MULTIPLAYER ROOMS & MATCH REVEAL)
+   5. REAL COMMUNITY FEED (NO DUMMY DATA)
    ============================================================== */
-let activeRoomId=null,roomListener=null,blendDeck=[],blendIndex=0;
+let feedFilter='all';
+
+$('#btnComposerAttach').onclick=()=>{
+  if(!S.liked.length) return toast('Love some songs first to attach them!');
+  attachTarget='composer';
+  openSongSelectModal();
+};
+
+function openSongSelectModal(){
+  const list=$('#selectSongList');
+  list.innerHTML=S.liked.map(t=>`
+    <div class="row" style="cursor:pointer" data-select-song="${t.id}">
+      <img src="${esc(t.art)}">
+      <div class="t"><b>${esc(t.name)}</b><span>${esc(t.artist)}</span></div>
+      <button class="btn sec" style="padding:4px 10px;font-size:12px">Select</button>
+    </div>
+  `).join('');
+  $('#selectSongModal').classList.add('on');
+}
+
+document.addEventListener('click',e=>{
+  const s=e.target.closest('[data-select-song]');
+  if(s){
+    const track=byId[s.dataset.selectSong];
+    if(track){
+      if(attachTarget==='composer'){
+        composerTrack=track;
+        $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-icon" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'">✕</button>`);
+        $('#composerAttachedTrack').style.display='block';
+      } else if(attachTarget==='chat'){
+        chatAttachedTrack=track;
+        $('#chatAttachedSong').innerHTML=`<span>Attached: <b>${esc(track.name)}</b> - ${esc(track.artist)}</span> <button class="btn-icon" onclick="chatAttachedTrack=null;$('#chatAttachedSong').style.display='none'">✕</button>`;
+        $('#chatAttachedSong').style.display='block';
+      }
+    }
+    $('#selectSongModal').classList.remove('on');
+  }
+});
+
+$('#btnPublishPost').onclick=async()=>{
+  if(!currentUser){openAuthModal('Sign in to publish to the community feed.');return}
+  const caption=$('#composerText').value.trim();
+  if(!caption && !composerTrack) return toast('Please enter a caption or attach a track.');
+
+  const trackToPost=composerTrack||(S.liked.length?S.liked[0]:null);
+  if(!trackToPost) return toast('Please love a song first or attach one to share.');
+
+  try{
+    await addDoc(collection(db,'posts'),{
+      uid:currentUser.uid,
+      authorName:(currentUser.displayName||'Music Lover').slice(0,100),
+      authorHandle:(S.userProfile?.handle||currentUser.displayName||'listener').slice(0,30),
+      authorColor:getUserColor(currentUser.uid),
+      authorEmail:currentUser.email||'',
+      caption:caption.slice(0,500),
+      track:{
+        id:trackToPost.id,
+        name:trackToPost.name.slice(0,300),
+        artist:trackToPost.artist.slice(0,300),
+        genre:(trackToPost.genre||'Music').slice(0,100),
+        year:String(trackToPost.year||'').slice(0,20),
+        art:trackToPost.art||'',
+        prev:trackToPost.prev||''
+      },
+      likesCount:0,
+      likedBy:[],
+      commentsCount:0,
+      comments:[],
+      createdAt:serverTimestamp()
+    });
+    $('#composerText').value='';
+    composerTrack=null;
+    $('#composerAttachedTrack').style.display='none';
+    toast('Published to community feed!');
+  }catch(err){
+    console.error(err);
+    toast('Error publishing post');
+  }
+};
+
+$('#feedTabAll').onclick=()=>{feedFilter='all';$('#feedTabAll').classList.add('on');$('#feedTabMine').classList.remove('on');renderFeed()};
+$('#feedTabMine').onclick=()=>{feedFilter='mine';$('#feedTabMine').classList.add('on');$('#feedTabAll').classList.remove('on');renderFeed()};
+
+function renderFeed(){
+  const el=$('#feed');
+  let posts=firestorePosts;
+  if(feedFilter==='mine'){
+    posts=posts.filter(p=>currentUser && p.uid===currentUser.uid);
+  }
+
+  if(!posts.length){
+    el.innerHTML=`<div class="empty"><div><b>No community posts yet.</b><br>Be the first to share a track using the composer above!</div></div>`;
+    return;
+  }
+
+  el.innerHTML=posts.map(p=>{
+    const t=p.track;
+    if(t) byId[t.id]=t;
+    const isLiked=currentUser && p.likedBy?.includes(currentUser.uid);
+    const commentsList=p.comments||[];
+    return `
+      <article class="post">
+        <div class="ph">
+          <div class="av" style="background:${p.authorColor||getUserColor(p.uid)}">${esc((p.authorName||'U')[0])}</div>
+          <div>
+            <b>${esc(p.authorName||'Listener')}</b>
+            <small>@${esc(p.authorHandle||'musicfan')}</small>
+          </div>
+        </div>
+        ${p.caption?`<p>${esc(p.caption)}</p>`:''}
+        ${t?rowH(t,`<button class="ib${S.liked.some(x=>x.id===t.id)?' on':''}" data-love="${t.id}" aria-label="Love">${heart}</button>`):''}
+        <div class="pf">
+          <button data-post-like="${p.id}" class="${isLiked?'on':''}">${heart}<b>${p.likesCount||0}</b></button>
+          <button data-toggle-comments="${p.id}">💬 <b>${commentsList.length}</b></button>
+        </div>
+        
+        <div class="comments-sec" id="comments-${p.id}">
+          <div id="commentList-${p.id}">
+            ${commentsList.map(c=>`<div class="comment-item"><b>${esc(c.authorName)}:</b><span>${esc(c.text)}</span></div>`).join('')}
+          </div>
+          <form class="comment-input-row" onsubmit="event.preventDefault();submitComment('${p.id}',this)">
+            <input type="text" placeholder="Add a comment…" required>
+            <button class="btn" style="padding:6px 12px;font-size:12px">Post</button>
+          </form>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+window.submitComment=async(postId,form)=>{
+  if(!currentUser){openAuthModal('Sign in to comment');return}
+  const input=form.querySelector('input');
+  const text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  try{
+    const newComment={
+      authorUid:currentUser.uid,
+      authorName:currentUser.displayName||'Music Fan',
+      text:text.slice(0,300),
+      createdAt:new Date().toISOString()
+    };
+    await updateDoc(doc(db,'posts',postId),{
+      comments:arrayUnion(newComment),
+      commentsCount:increment(1)
+    });
+    toast('Comment added');
+  }catch(err){console.error(err)}
+};
+
+// Firestore Realtime Listener for Posts
+try{
+  const postsQ=query(collection(db,'posts'),orderBy('createdAt','desc'),limit(40));
+  onSnapshot(postsQ,snapshot=>{
+    const posts=[];
+    snapshot.forEach(docSnap=>posts.push({id:docSnap.id,...docSnap.data()}));
+    firestorePosts=posts;
+    if($('#v-feed').classList.contains('on')) renderFeed();
+  },err=>console.warn('Posts notice:',err));
+}catch(err){}
+
+/* ==============================================================
+   6. INTERNAL DMs & GROUP CHAT SYSTEM
+   ============================================================== */
+let activeChats=[];
+
+$('#btnNewDM').onclick=()=>{
+  if(!currentUser){openAuthModal('Sign in to message friends');return}
+  $('#newChatTitle').textContent='New Direct Message';
+  $('#grpFields').style.display='none';
+  $('#lblChatTarget').textContent='Recipient Email';
+  $('#chatTargetEmail').placeholder='friend@example.com';
+  $('#tabNewDM').classList.add('on');$('#tabNewGroup').classList.remove('on');
+  $('#newChatModal').classList.add('on');
+};
+
+$('#btnNewGroup').onclick=()=>{
+  if(!currentUser){openAuthModal('Sign in to create groups');return}
+  $('#newChatTitle').textContent='Create Music Group';
+  $('#grpFields').style.display='block';
+  $('#lblChatTarget').textContent='Invite Member (Email)';
+  $('#chatTargetEmail').placeholder='friend@example.com';
+  $('#tabNewGroup').classList.add('on');$('#tabNewDM').classList.remove('on');
+  $('#newChatModal').classList.add('on');
+};
+
+$('#tabNewDM').onclick=()=>$('#btnNewDM').click();
+$('#tabNewGroup').onclick=()=>$('#btnNewGroup').click();
+
+$('#newChatForm').onsubmit=async e=>{
+  e.preventDefault();
+  const isGroup=$('#grpFields').style.display==='block';
+  const email=$('#chatTargetEmail').value.trim();
+  const grpName=$('#grpName').value.trim()||'Music Circle';
+  
+  try{
+    const chatId='chat_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+    const chatDoc={
+      id:chatId,
+      type:isGroup?'group':'dm',
+      name:isGroup?grpName:(email.split('@')[0]||'Friend'),
+      members:[currentUser.uid, email], // Email placeholder until resolved
+      memberNames:{[currentUser.uid]:currentUser.displayName||'Me'},
+      memberColors:{[currentUser.uid]:getUserColor(currentUser.uid)},
+      lastMessage:isGroup?'Group created':'Chat started',
+      lastSenderUid:currentUser.uid,
+      lastMessageAt:serverTimestamp(),
+      createdAt:serverTimestamp()
+    };
+    await setDoc(doc(db,'chats',chatId),chatDoc);
+    $('#newChatModal').classList.remove('on');
+    openChat(chatId,chatDoc);
+  }catch(err){
+    console.error(err);
+    toast('Could not create conversation');
+  }
+};
+
+function listenToUserChats(){
+  if(!currentUser || chatsListUnsub) return;
+  try{
+    const q=query(collection(db,'chats'),where('members','array-contains',currentUser.uid),orderBy('lastMessageAt','desc'),limit(30));
+    chatsListUnsub=onSnapshot(q,snapshot=>{
+      activeChats=[];
+      snapshot.forEach(d=>activeChats.push({id:d.id,...d.data()}));
+      if($('#v-messages').classList.contains('on') && $('#chatListView').style.display!=='none'){
+        renderChatsList();
+      }
+    },err=>{console.warn('Chats listener notice:',err)});
+  }catch(err){}
+}
+
+function renderChatsList(){
+  const container=$('#chatsContainer');
+  if(!activeChats.length){
+    container.innerHTML=`
+      <div class="empty">
+        <div>
+          <b>No conversations yet.</b><br>
+          Tap <b>+ DM</b> to message a listener or <b>👥 New Group</b> to start a listening circle!
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML=activeChats.map(c=>{
+    const isGroup=c.type==='group';
+    const av=isGroup?'👥':(c.name[0]||'🎧').toUpperCase();
+    return `
+      <div class="chat-item" onclick="window.openChatFromList('${c.id}')">
+        <div class="av" style="background:${getUserColor(c.id)}">${av}</div>
+        <div class="t">
+          <b><span>${esc(c.name)}</span><small>${c.type==='group'?'Group':''}</small></b>
+          <p>${esc(c.lastMessage||'No messages yet')}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openChatFromList=(chatId)=>{
+  const chat=activeChats.find(x=>x.id===chatId);
+  if(chat) openChat(chatId,chat);
+};
+
+function openChat(chatId,chat){
+  activeChatId=chatId;
+  activeChatData=chat;
+  $('#chatListView').style.display='none';
+  $('#chatRoomView').style.display='flex';
+  $('#activeChatTitle').textContent=chat.name||'Conversation';
+  $('#activeChatSub').textContent=chat.type==='group'?'Group Room':'Direct Message';
+  $('#activeChatAv').textContent=chat.type==='group'?'👥':(chat.name[0]||'🎧').toUpperCase();
+  
+  // Listen to messages
+  if(chatMsgsUnsub) chatMsgsUnsub();
+  const msgsQ=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'),limit(60));
+  chatMsgsUnsub=onSnapshot(msgsQ,snap=>{
+    const msgs=[];
+    snap.forEach(d=>msgs.push({id:d.id,...d.data()}));
+    renderMessages(msgs);
+  });
+}
+
+function renderMessages(msgs){
+  const el=$('#chatMsgs');
+  if(!msgs.length){
+    el.innerHTML='<div style="text-align:center;color:var(--mute);margin:auto">Say hello or drop a track! 🎵</div>';
+    return;
+  }
+  el.innerHTML=msgs.map(m=>{
+    const isMine=currentUser && m.senderUid===currentUser.uid;
+    const trackH=m.track?`
+      <div class="msg-track">
+        <img src="${esc(m.track.art)}" style="width:36px;height:36px;border-radius:6px">
+        <div style="flex:1;min-width:0">
+          <b style="font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.track.name)}</b>
+          <small style="font-size:11px;color:var(--mute)">${esc(m.track.artist)}</small>
+        </div>
+        <button class="ib" onclick="audio.src='${m.track.prev}';audio.play()" style="width:28px;height:28px;font-size:10px">▶</button>
+      </div>
+    `:'';
+    return `
+      <div class="msg-bubble ${isMine?'mine':'other'}">
+        ${!isMine?`<span class="sender-name" style="color:${m.senderColor||'var(--sun)'}">${esc(m.senderName)}</span>`:''}
+        ${m.text?`<div>${esc(m.text)}</div>`:''}
+        ${trackH}
+      </div>
+    `;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+$('#btnBackToChats').onclick=()=>{
+  $('#chatRoomView').style.display='none';
+  $('#chatListView').style.display='block';
+  if(chatMsgsUnsub) chatMsgsUnsub();
+};
+
+$('#btnChatAttachSong').onclick=()=>{
+  if(!S.liked.length) return toast('Love some tracks first in Discover to share them!');
+  attachTarget='chat';
+  openSongSelectModal();
+};
+
+$('#btnSendMsg').onclick=sendMessage;
+$('#chatMsgInput').onkeydown=e=>{if(e.key==='Enter') sendMessage()};
+
+async function sendMessage(){
+  if(!currentUser || !activeChatId) return;
+  const input=$('#chatMsgInput');
+  const text=input.value.trim();
+  if(!text && !chatAttachedTrack) return;
+
+  const msgPayload={
+    chatId:activeChatId,
+    senderUid:currentUser.uid,
+    senderName:currentUser.displayName||'Music Fan',
+    senderColor:getUserColor(currentUser.uid),
+    text:text,
+    createdAt:serverTimestamp()
+  };
+  if(chatAttachedTrack){
+    msgPayload.track={
+      id:chatAttachedTrack.id,
+      name:chatAttachedTrack.name,
+      artist:chatAttachedTrack.artist,
+      art:chatAttachedTrack.art,
+      prev:chatAttachedTrack.prev
+    };
+  }
+
+  input.value='';
+  chatAttachedTrack=null;
+  $('#chatAttachedSong').style.display='none';
+
+  try{
+    await addDoc(collection(db,'chats',activeChatId,'messages'),msgPayload);
+    await updateDoc(doc(db,'chats',activeChatId),{
+      lastMessage:text||'Sent a song',
+      lastSenderUid:currentUser.uid,
+      lastMessageAt:serverTimestamp()
+    });
+  }catch(err){console.error(err)}
+}
+
+/* ==============================================================
+   7. ACCOUNTS & USER PROFILE
+   ============================================================== */
+function renderAccountPage(){
+  if(!currentUser){
+    $('#profName').textContent='Guest Listener';
+    $('#profHandle').textContent='@guest';
+    $('#profBio').textContent='Sign in to customize your profile, save your listening stats, and chat with other listeners.';
+    $('#settingsEmail').textContent='Not signed in';
+    return;
+  }
+  const name=currentUser.displayName||currentUser.email.split('@')[0]||'Listener';
+  const handle=S.userProfile?.handle||name.toLowerCase().replace(/\s+/g,'');
+  const emoji=S.userProfile?.avatarEmoji||'🎧';
+  
+  $('#profName').textContent=name;
+  $('#profHandle').textContent='@'+handle;
+  $('#profBio').textContent=S.userProfile?.bio||'Audio enthusiast exploring new music on Spindle.';
+  $('#profAv').textContent=emoji;
+  $('#profAv').style.background=getUserColor(currentUser.uid);
+  $('#settingsEmail').textContent=currentUser.email||'Signed In';
+
+  // Stats
+  $('#profLoved').textContent=S.liked.length;
+  $('#profPassed').textContent=S.noped.length;
+  $('#profStreak').textContent='🔥 '+(S.streak||1);
+
+  // Top genres tags
+  const genres=topK(S.genre,6);
+  $('#profGenres').innerHTML=genres.length?genres.map(g=>`<span class="tag">${esc(g)}</span>`).join(''):'<p style="color:var(--mute);font-size:13px">Swipe songs on Discover to build your genre affinities.</p>';
+
+  // User's own posts
+  const myPosts=firestorePosts.filter(p=>p.uid===currentUser.uid);
+  $('#profMyPosts').innerHTML=myPosts.length?myPosts.map(p=>`
+    <div class="row">
+      ${p.track?`<img src="${esc(p.track.art)}">`:''}
+      <div class="t"><b>${esc(p.track?.name||'Post')}</b><span>${esc(p.caption||p.track?.artist||'')}</span></div>
+      <button class="btn sec" style="padding:4px 10px;font-size:11px" onclick="deleteMyPost('${p.id}')">Delete</button>
+    </div>
+  `).join(''):'<p style="color:var(--mute);font-size:13px">You haven\'t posted to the community feed yet.</p>';
+}
+
+window.deleteMyPost=async(postId)=>{
+  if(!confirm('Delete this post?')) return;
+  try{
+    const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    await deleteDoc(doc(db,'posts',postId));
+    toast('Post deleted');
+  }catch(e){console.error(e)}
+};
+
+$('#btnEditProfile').onclick=()=>{
+  if(!currentUser){openAuthModal('Sign in to edit your profile');return}
+  $('#editName').value=currentUser.displayName||'';
+  $('#editHandle').value=S.userProfile?.handle||'';
+  $('#editBio').value=S.userProfile?.bio||'';
+  $('#editProfileModal').classList.add('on');
+};
+
+$('#emojiRow').onclick=e=>{
+  const b=e.target.closest('button');
+  if(b){
+    $$('#emojiRow button').forEach(x=>x.classList.toggle('on',x===b));
+    S.userProfile.avatarEmoji=b.textContent;
+  }
+};
+
+$('#editProfileForm').onsubmit=async e=>{
+  e.preventDefault();
+  const name=$('#editName').value.trim();
+  const handle=$('#editHandle').value.trim().replace(/^@/,'');
+  const bio=$('#editBio').value.trim();
+
+  S.userProfile={
+    ...S.userProfile,
+    handle:handle,
+    bio:bio
+  };
+  saveLocal();
+
+  if(currentUser && name!==currentUser.displayName){
+    await updateProfile(currentUser,{displayName:name});
+  }
+  syncUserToFirestore();
+  $('#editProfileModal').classList.remove('on');
+  renderAccountPage();
+  renderUserHeader();
+  toast('Profile updated!');
+};
+
+$('#btnOpenAuraFromProf').onclick=()=>{
+  $('#auraModal').classList.add('on');
+  generateSoundAura();
+};
+
+/* ==============================================================
+   8. SETTINGS LOGIC
+   ============================================================== */
+function renderSettingsPage(){
+  $('#togScratch').classList.toggle('on',!!S.settings.scratch);
+  $('#togTapeStop').classList.toggle('on',!!S.settings.tapeStop);
+  $('#togAutoplay').classList.toggle('on',!!S.settings.autoplay);
+  $('#togReactive').classList.toggle('on',!!S.settings.reactive);
+  $('#selTheme').value=S.settings.theme||'default';
+  $('#settingsEmail').textContent=currentUser?currentUser.email:'Not signed in';
+  $('#btnSettingsAuth').textContent=currentUser?'Change':'Sign In';
+}
+
+$('#togScratch').onclick=()=>{S.settings.scratch=!S.settings.scratch;$('#togScratch').classList.toggle('on');saveLocal()};
+$('#togTapeStop').onclick=()=>{S.settings.tapeStop=!S.settings.tapeStop;$('#togTapeStop').classList.toggle('on');saveLocal()};
+$('#togAutoplay').onclick=()=>{S.settings.autoplay=!S.settings.autoplay;$('#togAutoplay').classList.toggle('on');saveLocal()};
+$('#togReactive').onclick=()=>{S.settings.reactive=!S.settings.reactive;$('#togReactive').classList.toggle('on');saveLocal()};
+
+$('#selTheme').onchange=e=>{
+  const val=e.target.value;
+  S.settings.theme=val;
+  saveLocal();
+  document.body.className=val==='midnight'?'theme-midnight':val==='cyber'?'theme-cyber':'';
+  toast('Theme applied: '+val);
+};
+
+$('#btnClearCache').onclick=()=>{
+  if(!confirm('Clear local history and seen tracks? Your loved library will stay safe.')) return;
+  S.seen=[];S.noped=[];
+  saveLocal();
+  toast('Swipe cache cleared!');
+};
+
+$('#btnSignOutFull').onclick=async()=>{
+  await signOut(auth);
+  toast('Signed out');
+  switchView('discover');
+};
+
+$('#btnSettingsAuth').onclick=()=>openAuthModal();
+
+/* ==============================================================
+   9. SPINDLE BLEND MULTIPLAYER
+   ============================================================== */
+let activeRoomId=null,roomListener=null,blendDeck=[];
 function renderBlendView(){
   if(!activeRoomId){
     $('#blendLobby').style.display='block';
@@ -923,9 +1606,7 @@ $('#btnCreateRoom').onclick=async()=>{
     });
     activeRoomId=code;
     startBlendSession(code,true);
-  }catch(err){
-    toast('Error creating room: '+err.message);
-  }
+  }catch(err){toast('Error creating room: '+err.message)}
 };
 
 $('#btnJoinRoom').onclick=async()=>{
@@ -944,9 +1625,7 @@ $('#btnJoinRoom').onclick=async()=>{
     });
     activeRoomId=code;
     startBlendSession(code,false);
-  }catch(err){
-    toast('Error joining room: '+err.message);
-  }
+  }catch(err){toast('Error joining room: '+err.message)}
 };
 
 function startBlendSession(code,isHost){
@@ -975,13 +1654,11 @@ function startBlendSession(code,isHost){
       const myCount=Object.keys(mySwipes||{}).length;
       const otherCount=Object.keys(otherSwipes||{}).length;
       
-      // If both completed all 10 tracks
       if(myCount>=blendDeck.length && otherCount>=blendDeck.length){
         renderBlendMatch(room);
         return;
       }
       
-      // Render active card for current user
       if(myCount<blendDeck.length){
         const cur=blendDeck[myCount];
         container.innerHTML=`
@@ -998,7 +1675,7 @@ function startBlendSession(code,isHost){
               </div>
               <button class="ib" onclick="audio.src='${cur.prev}';audio.play()">▶</button>
             </div>
-            <div class="btn-group" style="justify-content:center;margin-top:20px">
+            <div style="display:flex;justify-content:center;gap:12px;margin-top:20px">
               <button class="btn sec" style="width:110px" id="btnBlendPass">Pass</button>
               <button class="btn" style="width:110px" id="btnBlendLove">Love</button>
             </div>
@@ -1045,7 +1722,7 @@ function renderBlendMatch(room){
         ${mutuals.length?mutuals.map(t=>rowH(t)).join(''):'<p style="text-align:center;color:var(--mute)">No mutual favorites this round. Try another blend!</p>'}
       </div>
 
-      <div class="btn-group" style="justify-content:center">
+      <div style="display:flex;justify-content:center;gap:10px">
         ${mutuals.length?`<button class="btn" id="btnSaveBlend">Save Matches to Library</button>`:''}
         <button class="btn sec" onclick="activeRoomId=null;renderBlendView()">Done</button>
       </div>
@@ -1061,83 +1738,54 @@ function renderBlendMatch(room){
 }
 
 /* ==============================================================
-   5. SOUND AURA CANVAS GENERATOR
+   10. SOUND AURA CANVAS
    ============================================================== */
-$('#btnRevealAura').onclick=()=>{
-  const modal=$('#auraModal');
-  modal.classList.add('on');
-  generateSoundAura();
-};
-
 function generateSoundAura(){
   const canvas=$('#auraCanvas');
   const ctx=canvas.getContext('2d');
   const w=canvas.width,h=canvas.height;
 
-  // Background
-  ctx.fillStyle='#0f061c';
-  ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#0f061c';ctx.fillRect(0,0,w,h);
 
-  // Dynamic Aura Gradient based on top genres
   const topG=topK(S.genre,3);
   const color1=topG[0]?.includes('Rock')?'#ffc857':topG[0]?.includes('Pop')?'#ff5c8a':'#b79cff';
   const color2=topG[1]?.includes('Hip')?'#ff8a5c':'#5ce1c6';
 
   const grad=ctx.createRadialGradient(w/2,h*0.42,20,w/2,h*0.42,w*0.5);
-  grad.addColorStop(0,color1);
-  grad.addColorStop(0.5,color2);
-  grad.addColorStop(1,'transparent');
-  ctx.fillStyle=grad;
-  ctx.beginPath();
-  ctx.arc(w/2,h*0.42,w*0.5,0,Math.PI*2);
-  ctx.fill();
+  grad.addColorStop(0,color1);grad.addColorStop(0.5,color2);grad.addColorStop(1,'transparent');
+  ctx.fillStyle=grad;ctx.beginPath();ctx.arc(w/2,h*0.42,w*0.5,0,Math.PI*2);ctx.fill();
 
-  // Concentric Vinyl Grooves
-  ctx.strokeStyle='rgba(255,255,255,0.06)';
-  ctx.lineWidth=2;
-  for(let r=40;r<220;r+=18){
-    ctx.beginPath();ctx.arc(w/2,h*0.42,r,0,Math.PI*2);ctx.stroke();
-  }
+  ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=2;
+  for(let r=40;r<220;r+=18){ctx.beginPath();ctx.arc(w/2,h*0.42,r,0,Math.PI*2);ctx.stroke()}
 
-  // Aura Archetype
   let archetype='The Midnight Dreamer';
   if(topG[0]?.includes('Rock')) archetype='The Electric Nomad';
   if(topG[0]?.includes('Pop')) archetype='The Sunset Optimist';
   if(topG[0]?.includes('Hip')) archetype='The Velvet Realist';
 
-  ctx.fillStyle='#ffffff';
-  ctx.font='800 36px "Bricolage Grotesque", sans-serif';
-  ctx.textAlign='center';
+  ctx.fillStyle='#ffffff';ctx.font='800 36px "Bricolage Grotesque", sans-serif';ctx.textAlign='center';
   ctx.fillText(archetype,w/2,h*0.75);
 
-  ctx.fillStyle='#b9a9cf';
-  ctx.font='500 18px "DM Sans", sans-serif';
+  ctx.fillStyle='#b9a9cf';ctx.font='500 18px "DM Sans", sans-serif';
   ctx.fillText(topG.length?topG.join(' • '):'Eclectic Explorer',w/2,h*0.81);
 
-  ctx.fillStyle='#ffc857';
-  ctx.font='700 14px "DM Sans", sans-serif';
+  ctx.fillStyle='#ffc857';ctx.font='700 14px "DM Sans", sans-serif';
   ctx.fillText('SPINDLE SOUND AURA • '+new Date().toLocaleDateString(),w/2,h*0.92);
 }
 
 $('#btnDownloadAura').onclick=()=>{
-  const a=document.createElement('a');
-  a.download='spindle-sound-aura.png';
-  a.href=$('#auraCanvas').toDataURL();
-  a.click();
+  const a=document.createElement('a');a.download='spindle-sound-aura.png';a.href=$('#auraCanvas').toDataURL();a.click();
 };
 $('#btnShareAura').onclick=()=>{
   if(navigator.share){
-    $('#auraCanvas').toBlob(blob=>{
-      navigator.share({files:[new File([blob],'sound-aura.png',{type:'image/png'})],title:'My Spindle Sound Aura'}).catch(()=>{});
-    });
+    $('#auraCanvas').toBlob(blob=>{navigator.share({files:[new File([blob],'sound-aura.png',{type:'image/png'})],title:'My Sound Aura'}).catch(()=>{})});
   } else {
-    toast('Saved to download folder!');
     $('#btnDownloadAura').click();
   }
 };
 
 /* ==============================================================
-   6. 2D VIBE RADAR & COORDINATE PAD
+   11. 2D VIBE RADAR
    ============================================================== */
 $('#btnOpenRadar').onclick=()=>$('#vibeModal').classList.add('on');
 const vibePad=$('#vibePad'),vibePuck=$('#vibePuck');
@@ -1147,192 +1795,77 @@ function updatePuck(e){
   const rect=vibePad.getBoundingClientRect();
   const x=Math.max(0,Math.min(rect.width,e.clientX-rect.left));
   const y=Math.max(0,Math.min(rect.height,e.clientY-rect.top));
-  vibePuck.style.left=x+'px';
-  vibePuck.style.top=y+'px';
+  vibePuck.style.left=x+'px';vibePuck.style.top=y+'px';
   currentVibe.x=((x/rect.width)*2)-1;
-  currentVibe.y=-(((y/rect.height)*2)-1); // Inverted Y: up = modern, down = vintage
-  
+  currentVibe.y=-(((y/rect.height)*2)-1);
   let xLabel=currentVibe.x>0.2?'Hype':currentVibe.x<-0.2?'Chill':'Balanced';
   let yLabel=currentVibe.y>0.2?'Modern':currentVibe.y<-0.2?'Vintage':'Eclectic';
   currentVibe.name=`${xLabel} • ${yLabel}`;
   $('#vibeCurrent').textContent=`Active Vibe: ${currentVibe.name}`;
 }
-
 vibePad.onpointerdown=e=>{draggingPuck=true;vibePad.setPointerCapture(e.pointerId);updatePuck(e)};
 vibePad.onpointermove=e=>{if(draggingPuck) updatePuck(e)};
 vibePad.onpointerup=vibePad.onpointercancel=()=>{draggingPuck=false};
-
 $('#btnApplyVibe').onclick=()=>{
-  $('#vibeModal').classList.remove('on');
-  deck=[];
-  refill();
-  toast('Vibe locked: '+currentVibe.name);
+  $('#vibeModal').classList.remove('on');deck=[];refill();toast('Vibe locked: '+currentVibe.name);
 };
 
 /* ==============================================================
-   7. 1-CLICK EXPORT TO SPOTIFY & UNIVERSAL PLAYLIST
+   12. EXPORT PLAYLIST
    ============================================================== */
 $('#btnOpenExport').onclick=()=>$('#exportModal').classList.add('on');
-
 $('#btnExportSpotify').onclick=()=>{
   if(!S.liked.length) return toast('Your library is empty');
-  const top=S.liked[0];
-  const query=encodeURIComponent(`${top.name} ${top.artist}`);
-  window.open(`https://open.spotify.com/search/${query}`,'_blank');
+  window.open(`https://open.spotify.com/search/${encodeURIComponent(S.liked[0].name+' '+S.liked[0].artist)}`,'_blank');
 };
-
 $('#btnDownloadCSV').onclick=()=>{
   if(!S.liked.length) return toast('Your library is empty');
   let csv="Title,Artist,Genre,Year\n";
   S.liked.forEach(t=>{csv+=`"${t.name.replace(/"/g,'""')}","${t.artist.replace(/"/g,'""')}","${t.genre||''}","${t.year||''}"\n`});
-  const blob=new Blob([csv],{type:'text/csv'});
-  const a=document.createElement('a');a.download='spindle-library.csv';a.href=URL.createObjectURL(blob);a.click();
+  const a=document.createElement('a');a.download='spindle-library.csv';a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.click();
   toast('Downloaded spindle-library.csv!');
 };
-
 $('#btnCopyTracklist').onclick=()=>{
   if(!S.liked.length) return toast('Your library is empty');
-  const text=S.liked.map(t=>`${t.name} - ${t.artist}`).join('\n');
-  navigator.clipboard?.writeText(text);
+  navigator.clipboard?.writeText(S.liked.map(t=>`${t.name} - ${t.artist}`).join('\n'));
   toast('Copied '+S.liked.length+' tracks to clipboard!');
 };
 
 /* ==============================================================
-   8. DAILY BLIND 10 CHALLENGE
+   13. DAILY BLIND 10
    ============================================================== */
 $('#btnOpenDaily').onclick=()=>$('#dailyModal').classList.add('on');
-
 $('#btnStartDaily').onclick=async()=>{
-  $('#dailyModal').classList.remove('on');
-  isBlindMode=true;
-  deck=[];
+  $('#dailyModal').classList.remove('on');isBlindMode=true;deck=[];
   toast('Daily Blind Mode active!');
   try{
-    const blindQuery=['mystery indie pop','top global hits','retro rock','electronic hype'];
-    const r=(await Promise.all(blindQuery.map(q=>search(q,5)))).flat().sort(()=>Math.random()-.5).slice(0,10);
-    deck=r;
-    renderDeck();
+    const r=(await Promise.all(['mystery pop hits','retro rock','electronic hype'].map(q=>search(q,5)))).flat().sort(()=>Math.random()-.5).slice(0,10);
+    deck=r;renderDeck();
   }catch(e){refill()}
 };
 
-/* Modals Generic Closer */
-$$('[data-close]').forEach(btn=>btn.onclick=()=>{
-  const targetId=btn.dataset.close;
-  $('#'+targetId).classList.remove('on');
+/* ==============================================================
+   14. LIBRARY & AUTH HEADER
+   ============================================================== */
+function renderLib(){
+  reg(S.liked);
+  $('#lib').innerHTML=S.liked.length?S.liked.map(t=>rowH(t,`<button class="ib" data-share="${t.id}" aria-label="Share">↗</button>`)).join(''):'<div class="empty">Nothing here yet. Swipe right on Discover to start your library.</div>';
+}
+
+document.addEventListener('click',e=>{
+  const s=e.target.closest('[data-share]');
+  if(s){
+    const track=byId[s.dataset.share];
+    if(track){
+      composerTrack=track;
+      $('#composerAttachedTrack').innerHTML=rowH(track,`<button class="btn-icon" onclick="composerTrack=null;$('#composerAttachedTrack').style.display='none'">✕</button>`);
+      $('#composerAttachedTrack').style.display='block';
+      switchView('feed');
+      $('#composerText').focus();
+    }
+  }
 });
-$$('.modal-backdrop').forEach(modal=>modal.onclick=e=>{
-  if(e.target===modal) modal.classList.remove('on');
-});
 
-/* Feed */
-let friendPosts=null;
-async function renderFeed(){
- const el=$('#feed');
- if(!friendPosts && !firestorePosts.length){
-   el.innerHTML='<div class="sk"></div>'.repeat(3);
-   try {
-     friendPosts=(await Promise.all(FRIENDS.map(async f=>{try{const r=(await search(f.q,12)).filter(t=>t.art);reg(r);return [pick(r),pick(r)].filter((t,i,a)=>t&&a.indexOf(t)===i).map(t=>({f,t,cap:pick(CAPS),n:3+Math.random()*60|0}))}catch(e){return[]}}))).flat().sort(()=>Math.random()-.5);
-   } catch(e) {
-     friendPosts=[];
-   }
- }
-
- const livePosts=firestorePosts.map(p=>{
-   const t=p.track;
-   if(t) byId[t.id]=t;
-   const isLiked=currentUser&&p.likedBy?.includes(currentUser.uid);
-   return {
-     id: p.id,
-     f: { n: p.authorName||'Listener', c: p.authorColor||getUserColor(p.uid), g: t?.genre?[t.genre]:[] },
-     t: t,
-     cap: p.caption||'',
-     n: p.likesCount||0,
-     me: currentUser&&p.uid===currentUser.uid,
-     isLiked: isLiked,
-     fromDb: true
-   };
- });
-
- const all=[...livePosts, ...(friendPosts||[])];
- el.innerHTML=all.length?all.map(p=>{
-  if(!p.t) return '';
-  const m=p.f.g.length?Math.min(99,55+Math.round(p.f.g.reduce((a,g)=>a+Math.max(0,S.genre[g]||0),0)*8)):0;
-  const isLoved=S.liked.some(x=>x.id===p.t.id);
-  const likeBtnH=p.fromDb
-    ? `<div class="pf"><button data-post-like="${p.id}" class="${p.isLiked?'on':''}">${heart}<b>${p.n}</b></button></div>`
-    : `<div class="pf"><button data-fl>${heart}<b>${p.n}</b></button></div>`;
-  return `<article class="post"><div class="ph"><div class="av" style="background:${p.f.c}">${esc(p.f.n[0]||'•')}</div><div><b>${esc(p.f.n)}</b><small>${p.me?'you posted':'shared a song'}</small></div>${m?`<span class="match" title="Taste match">${m}% match</span>`:''}</div><p>${esc(p.cap)}</p>${rowH(p.t,`<button class="ib${isLoved?' on':''}" data-love="${p.t.id}" aria-label="Love">${heart}</button>`)}${likeBtnH}</article>`
- }).join(''):'<div class="empty">No posts yet. Share a loved song from your Library!</div>';
-}
-
-/* For you */
-async function renderForYou(){
- stats();const g=topK(S.genre,5),mx=Math.max(1,...g.map(k=>S.genre[k]));
- $('#bars').innerHTML=g.map(k=>`<div><label>${esc(k)}</label><i style="width:${S.genre[k]/mx*100}%"></i></div>`).join('');
- $('#tags').innerHTML=topK(S.artist,8).map(a=>`<span class="tag">${esc(a)}</span>`).join('');
- const el=$('#recs');
- if(!g.length){el.innerHTML='';return}
- $('#fySub').textContent='Built from your swipes. Updates as you go.';
- el.innerHTML='<h1 style="font-size:20px;margin:18px 0 10px">Made for you</h1>'+'<div class="sk"></div>'.repeat(4);
- try{const c=(await candidates()).slice(0,12);reg(c);
-  el.innerHTML='<h1 style="font-size:20px;margin:18px 0 10px">Made for you</h1>'+c.map(t=>rowH(t,`<button class="ib${S.liked.some(x=>x.id===t.id)?' on':''}" data-love="${t.id}" aria-label="Love">${heart}</button>`)).join('')}
- catch(e){el.innerHTML='<p class="sub">Couldn\'t load picks. Try again in a moment.</p>'}
-}
-
-/* Library & Share */
-function renderLib(){reg(S.liked);$('#lib').innerHTML=S.liked.length?S.liked.map(t=>rowH(t,`<button class="ib" data-share="${t.id}" aria-label="Share to feed">↗</button>`)).join(''):'<div class="empty">Nothing here yet. Swipe right on Discover to start your library.</div>'}
-
-let shT=null;
-function openShare(t){
- shT=t;
- $('#shRow').innerHTML=`<img src="${esc(t.art)}" alt="" style="width:54px;height:54px;border-radius:10px"><div class="t"><b>${esc(t.name)}</b><span>${esc(t.artist)}</span></div>`;
- $('#cap').value='';
- $('#sheet').classList.add('on');
- $('#cap').focus();
-}
-
-$('#shGo').onclick=async()=>{
- if(!shT)return;
- const caption=$('#cap').value.trim()||pick(CAPS);
- $('#sheet').classList.remove('on');
- 
- if(currentUser){
-   try{
-     const newPost={
-       uid:currentUser.uid,
-       authorName:(currentUser.displayName||'Music Lover').slice(0,100),
-       authorColor:getUserColor(currentUser.uid),
-       track:{
-         id:shT.id,
-         name:shT.name.slice(0,300),
-         artist:shT.artist.slice(0,300),
-         genre:(shT.genre||'Music').slice(0,100),
-         year:String(shT.year||'').slice(0,20),
-         art:shT.art||'',
-         prev:shT.prev||''
-       },
-       caption:caption.slice(0,500),
-       likesCount:0,
-       likedBy:[],
-       createdAt:serverTimestamp()
-     };
-     if(currentUser.email) newPost.authorEmail=currentUser.email;
-     await addDoc(collection(db,'posts'),newPost);
-     toast('Posted to community feed!');
-   }catch(err){
-     console.error('Post to Firestore failed:',err);
-     S.posts.unshift({t:shT,cap:caption});
-     saveLocal();
-     toast('Saved locally');
-   }
- } else {
-   S.posts.unshift({t:shT,cap:caption});
-   saveLocal();
-   toast('Posted to your feed');
- }
-};
-
-/* Auth Management */
 let isSignupMode=false;
 function renderUserHeader(){
   const slot=$('#authSlot');
@@ -1341,21 +1874,14 @@ function renderUserHeader(){
     $('#btnShowAuth').onclick=()=>openAuthModal();
   } else {
     const name=currentUser.displayName||currentUser.email.split('@')[0]||'User';
-    const initial=(name[0]||'U').toUpperCase();
     const color=getUserColor(currentUser.uid);
     slot.innerHTML=`
-      <div class="user-chip">
-        <div class="av" style="background:${color}">${initial}</div>
+      <div class="user-chip" id="btnHeaderProfile">
+        <div class="av" style="background:${color}">${S.userProfile?.avatarEmoji||(name[0]||'U').toUpperCase()}</div>
         <span class="uname" title="${esc(name)}">${esc(name)}</span>
-        <button class="btn-icon" id="btnSignOut" title="Sign out" aria-label="Sign out">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        </button>
       </div>
     `;
-    $('#btnSignOut').onclick=async()=>{
-      await signOut(auth);
-      toast('Signed out');
-    };
+    $('#btnHeaderProfile').onclick=()=>switchView('account');
   }
 }
 
@@ -1367,18 +1893,12 @@ function openAuthModal(msg=''){
 }
 
 $('#tabLogin').onclick=()=>{
-  isSignupMode=false;
-  $('#tabLogin').classList.add('on');$('#tabSignup').classList.remove('on');
-  $('#nameGrp').style.display='none';
-  $('#authTitle').textContent='Sign in to Spindle';
-  $('#authSubmitBtn').textContent='Log In';
+  isSignupMode=false;$('#tabLogin').classList.add('on');$('#tabSignup').classList.remove('on');
+  $('#nameGrp').style.display='none';$('#authTitle').textContent='Sign in to Spindle';$('#authSubmitBtn').textContent='Log In';
 };
 $('#tabSignup').onclick=()=>{
-  isSignupMode=true;
-  $('#tabSignup').classList.add('on');$('#tabLogin').classList.remove('on');
-  $('#nameGrp').style.display='block';
-  $('#authTitle').textContent='Create your account';
-  $('#authSubmitBtn').textContent='Sign Up';
+  isSignupMode=true;$('#tabSignup').classList.add('on');$('#tabLogin').classList.remove('on');
+  $('#nameGrp').style.display='block';$('#authTitle').textContent='Create your account';$('#authSubmitBtn').textContent='Sign Up';
 };
 
 $('#authForm').onsubmit=async e=>{
@@ -1387,8 +1907,7 @@ $('#authForm').onsubmit=async e=>{
   const password=$('#authPass').value;
   const name=$('#authName').value.trim();
   const submitBtn=$('#authSubmitBtn');
-  submitBtn.disabled=true;
-  submitBtn.textContent='Connecting…';
+  submitBtn.disabled=true;submitBtn.textContent='Connecting…';
   try{
     if(isSignupMode){
       const cred=await createUserWithEmailAndPassword(auth,email,password);
@@ -1400,12 +1919,9 @@ $('#authForm').onsubmit=async e=>{
     }
     $('#authModal').classList.remove('on');
   }catch(err){
-    const el=$('#authError');
-    el.textContent=err.message||'Authentication failed';
-    el.style.display='block';
+    const el=$('#authError');el.textContent=err.message||'Authentication failed';el.style.display='block';
   }finally{
-    submitBtn.disabled=false;
-    submitBtn.textContent=isSignupMode?'Sign Up':'Log In';
+    submitBtn.disabled=false;submitBtn.textContent=isSignupMode?'Sign Up':'Log In';
   }
 };
 
@@ -1420,25 +1936,17 @@ $('#btnGoogle').onclick=async()=>{
   }
 };
 
-// Firestore Realtime Listener for Community Feed
-try{
-  const postsQ=query(collection(db,'posts'),orderBy('createdAt','desc'),limit(40));
-  onSnapshot(postsQ,snapshot=>{
-    const posts=[];
-    snapshot.forEach(docSnap=>posts.push({id:docSnap.id,...docSnap.data()}));
-    firestorePosts=posts;
-    if($('#v-feed').classList.contains('on')) renderFeed();
-  },err=>{console.warn('Realtime feed notice:',err)});
-}catch(err){}
+$$('[data-close]').forEach(btn=>btn.onclick=()=>$('#'+btn.dataset.close).classList.remove('on'));
+$$('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m) m.classList.remove('on')});
 
-// Authentication state observer
+// Auth state observer
 onAuthStateChanged(auth,async user=>{
   currentUser=user;
   renderUserHeader();
   if(user){
+    listenToUserChats();
     try{
-      const userDocRef=doc(db,'users',user.uid);
-      const snap=await getDoc(userDocRef);
+      const snap=await getDoc(doc(db,'users',user.uid));
       if(snap.exists()){
         const data=snap.data();
         if(Array.isArray(data.liked) && data.liked.length){
@@ -1449,12 +1957,25 @@ onAuthStateChanged(auth,async user=>{
         if(data.genre) S.genre={...data.genre,...S.genre};
         if(data.artist) S.artist={...data.artist,...S.artist};
         if(data.decade) S.decade={...data.decade,...S.decade};
+        if(data.bio || data.handle || data.avatarEmoji){
+          S.userProfile={
+            bio:data.bio||S.userProfile.bio,
+            handle:data.handle||S.userProfile.handle,
+            avatarEmoji:data.avatarEmoji||S.userProfile.avatarEmoji
+          };
+        }
+        if(data.settings) S.settings={...S.settings,...data.settings};
       }
       syncUserToFirestore();
       stats();
+      renderUserHeader();
     }catch(err){}
   }
 });
+
+// Init theme
+if(S.settings.theme==='midnight') document.body.className='theme-midnight';
+else if(S.settings.theme==='cyber') document.body.className='theme-cyber';
 
 stats();
 refill();
