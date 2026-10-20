@@ -1,0 +1,197 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Application: Spindle (spindle-3b452)
+// This security rules file assumes the following data structures:
+//
+// Collection: users
+// Document ID: {userId} (matches Firebase Auth UID)
+// Fields:
+//   - uid: string (required, immutable) - Firebase Auth UID of the user
+//   - displayName: string (required, 1-100 chars) - User's display name
+//   - email: string (required, valid email, max 254 chars) - User's email address (PII)
+//   - avatarColor: string (required, 2-30 chars) - Hex color or color token
+//   - liked: list (optional, max 1000 items) - Array of loved song objects
+//   - noped: list (optional, max 2000 items) - Array of passed track IDs
+//   - seen: list (optional, max 5000 items) - Array of seen track IDs
+//   - genre: map (optional, max 200 keys) - Genre affinity scores
+//   - artist: map (optional, max 500 keys) - Artist affinity scores
+//   - decade: map (optional, max 50 keys) - Decade affinity scores
+//   - updatedAt: timestamp (required) - Last profile update timestamp
+//
+// Collection: posts
+// Document ID: {postId} (auto-generated ID)
+// Fields:
+//   - uid: string (required, immutable) - Author's Firebase Auth UID
+//   - authorName: string (required, 1-100 chars) - Display name of post author
+//   - authorColor: string (required, 2-30 chars) - Avatar color of post author
+//   - authorEmail: string (optional, valid email, max 254 chars) - Email of author
+//   - track: map (required, max 20 keys) - Song info (id, name, artist, genre, year, art, prev)
+//   - caption: string (required, 0-500 chars) - Post caption
+//   - likesCount: int (required, >= 0) - Aggregate like counter
+//   - likedBy: list (required, max 10000 items) - List of user UIDs who liked the post
+//   - createdAt: timestamp (required, immutable) - Timestamp when post was created
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user owns the resource (for user-owned documents by path ID)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validate email address format and length
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 254 &&
+        email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+
+    // Validate web URL format (must start with https:// or http://)
+    function isValidUrl(url) {
+      return url is string &&
+        (url.matches('^https://.*') || url.matches('^http://.*'));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // Validate track metadata map within a post
+    function isValidTrack(track) {
+      return track is map &&
+        track.keys().hasAll(['id', 'name', 'artist']) &&
+        track.keys().hasOnly(['id', 'name', 'artist', 'genre', 'year', 'art', 'prev']) &&
+        ((track.id is string && track.id.size() > 0 && track.id.size() <= 100) || (track.id is int)) &&
+        track.name is string && track.name.size() > 0 && track.name.size() <= 300 &&
+        track.artist is string && track.artist.size() > 0 && track.artist.size() <= 300 &&
+        (!('genre' in track) || (track.genre is string && track.genre.size() <= 100)) &&
+        (!('year' in track) || (track.year is string && track.year.size() <= 20) || (track.year is int)) &&
+        (!('art' in track) || (track.art is string && track.art.size() <= 1000 && (track.art == '' || isValidUrl(track.art)))) &&
+        (!('prev' in track) || (track.prev is string && track.prev.size() <= 1000 && (track.prev == '' || isValidUrl(track.prev))));
+    }
+
+    // Validate user document schema and bounds (used for both create and update)
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'avatarColor', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'email', 'avatarColor', 'liked', 'noped', 'seen', 'genre', 'artist', 'decade', 'updatedAt']) &&
+        data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+        isValidEmail(data.email) &&
+        data.avatarColor is string && data.avatarColor.size() >= 2 && data.avatarColor.size() <= 30 &&
+        data.updatedAt is timestamp &&
+        (!('liked' in data) || (data.liked is list && data.liked.size() <= 1000)) &&
+        (!('noped' in data) || (data.noped is list && data.noped.size() <= 2000)) &&
+        (!('seen' in data) || (data.seen is list && data.seen.size() <= 5000)) &&
+        (!('genre' in data) || (data.genre is map && data.genre.size() <= 200)) &&
+        (!('artist' in data) || (data.artist is map && data.artist.size() <= 500)) &&
+        (!('decade' in data) || (data.decade is map && data.decade.size() <= 50));
+    }
+
+    // Validate post document schema and bounds (used for both create and update)
+    function isValidPost(data) {
+      return data.keys().hasAll(['uid', 'authorName', 'authorColor', 'track', 'caption', 'likesCount', 'likedBy', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'authorName', 'authorColor', 'authorEmail', 'track', 'caption', 'likesCount', 'likedBy', 'createdAt']) &&
+        data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 &&
+        data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 100 &&
+        data.authorColor is string && data.authorColor.size() >= 2 && data.authorColor.size() <= 30 &&
+        (!('authorEmail' in data) || isValidEmail(data.authorEmail)) &&
+        isValidTrack(data.track) &&
+        data.caption is string && data.caption.size() <= 500 &&
+        data.likesCount is int && data.likesCount >= 0 &&
+        data.likedBy is list && data.likedBy.size() <= 10000 &&
+        data.createdAt is timestamp;
+    }
+
+    // Validate like toggle transition by non-author authenticated users
+    function isValidLikeToggle() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'likedBy']) &&
+        request.resource.data.likesCount is int &&
+        request.resource.data.likesCount >= 0 &&
+        request.resource.data.likedBy is list &&
+        request.resource.data.likedBy.size() <= 10000 &&
+        (
+          // Liking: Increment count by 1 and add authenticated user UID to likedBy
+          (request.resource.data.likesCount == resource.data.likesCount + 1 &&
+           request.auth.uid in request.resource.data.likedBy &&
+           !(request.auth.uid in resource.data.likedBy)) ||
+          // Unliking: Decrement count by 1 and remove authenticated user UID from likedBy
+          (request.resource.data.likesCount == resource.data.likesCount - 1 &&
+           !(request.auth.uid in request.resource.data.likedBy) &&
+           request.auth.uid in resource.data.likedBy)
+        );
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Default Deny all unspecified access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Users collection
+    // Holds user profile and private listening preferences
+    match /users/{userId} {
+      // PII Protection: only the owner can read their profile and library
+      allow read: if isOwner(userId);
+
+      // Users can only create their own profile document matching their Auth UID
+      allow create: if isOwner(userId) &&
+                       request.resource.data.uid == userId &&
+                       isValidUser(request.resource.data);
+
+      // Users can only update their own profile; UID remains immutable
+      allow update: if isOwner(userId) &&
+                       request.resource.data.uid == resource.data.uid &&
+                       isValidUser(request.resource.data);
+
+      // Users can delete their own profile
+      allow delete: if isOwner(userId);
+    }
+
+    // 2. Posts collection
+    // Holds public community feed posts
+    match /posts/{postId} {
+      // Public community feed readable by anyone (authenticated or unauthenticated)
+      allow read: if true;
+
+      // Authenticated users can create their own post starting with 0 likes
+      allow create: if isAuthenticated() &&
+                       request.resource.data.uid == request.auth.uid &&
+                       isValidPost(request.resource.data) &&
+                       request.resource.data.likesCount == 0 &&
+                       request.resource.data.likedBy.size() == 0;
+
+      // Updates allowed for author (editing post) or any authenticated user (toggling like)
+      allow update: if isAuthenticated() &&
+                       isValidPost(request.resource.data) &&
+                       request.resource.data.uid == resource.data.uid &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       (
+                         // Author updating their post
+                         resource.data.uid == request.auth.uid ||
+                         // Any authenticated user toggling a like on the post
+                         isValidLikeToggle()
+                       );
+
+      // Only the post author can delete their post
+      allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+  }
+}
